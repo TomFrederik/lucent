@@ -9,10 +9,10 @@
 The :code:`lucent.optvis` package provides ...
 
 
-optvis
+optvis.objectives
 =================
 
-.. automodule:: lucent.optvis
+.. automodule:: lucent.optvis.objectives
     :members:
     :undoc-members:
     :show-inheritance:
