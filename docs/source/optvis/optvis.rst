@@ -9,7 +9,7 @@
 The :code:`lucent.optvis` package provides ...
 
 
-optvis.objectives
+optvis.objectiv
 =================
 
 .. automodule:: lucent.optvis.objectives
