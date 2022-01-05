@@ -13,7 +13,7 @@ objectives
 =================
 
 .. automodule:: lucent.objectives
-    :members: Objective, neuron
+    :members:
     :undoc-members:
     :show-inheritance:
     
