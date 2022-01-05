@@ -1,18 +1,18 @@
 =====================================
-:code:`lucent.objectives`
+:code:`lucent.optvis`
 =====================================
 
 .. toctree::
       :hidden:
 
 
-The :code:`lucent.objectives` package provides ...
+The :code:`lucent.optvis` package provides ...
 
 
-objectives
+optvis
 =================
 
-.. automodule:: lucent.objectives
+.. automodule:: lucent.optvis
     :members:
     :undoc-members:
     :show-inheritance:
