@@ -13,6 +13,7 @@ optvis.objectives
 =================
 
 .. automodule:: lucent.optvis.objectives
+    :imported-members:
     :members:
     :undoc-members:
     :show-inheritance:
