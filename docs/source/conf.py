@@ -2,12 +2,12 @@
 
 # -- Project information
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
+project = 'Lucent'
+copyright = '2021, Lim Swee Kiat'
+author = 'Lim Swee Kiat'
 
-release = '0.1'
-version = '0.1.0'
+release = '0.1.8'
+version = '0.1.8'
 
 # -- General configuration
 
