@@ -52,7 +52,9 @@ optvis.transform
     :undoc-members:
     :show-inheritance:
     
- optvis.param
+    
+    
+optvis.param
 =================
 
 .. automodule:: lucent.optvis.param
