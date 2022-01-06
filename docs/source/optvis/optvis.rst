@@ -9,6 +9,11 @@
 The :code:`lucent.optvis` package provides ...
 
 
+.. automodule:: lucent.optvis
+    :members:
+    :imported-members:
+    :show-inheritence:
+
 
 optvis.objectives
 =================
