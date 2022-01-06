@@ -14,7 +14,8 @@ Contents
 --------
 
 .. toctree::
+   :maxdepth: 2
 
    usage
    api
-   optvis
+   optvis/optvis
