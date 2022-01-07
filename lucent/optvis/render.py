@@ -17,7 +17,7 @@ from __future__ import absolute_import, division, print_function
 
 import warnings
 from collections import OrderedDict
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Optional, Any
 
 import einops
 import numpy as np
@@ -27,6 +27,7 @@ import torch
 
 from lucent.misc.io import show
 from lucent.optvis import objectives, transform, param
+from lucent.optvis.hooks import hook_model
 
 
 def render_vis(
