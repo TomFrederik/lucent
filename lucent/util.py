@@ -23,6 +23,9 @@ import torch
 
 
 def set_seed(seed):
+    """Seeds all random number generators and enables deterministic cudnn.
+    : param seed: seed value to seed the RNGs. Can e.g. be float or int. 
+    """
     # Set global seeds to for reproducibility
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
