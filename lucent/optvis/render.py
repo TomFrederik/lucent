@@ -44,7 +44,7 @@ def render_vis(
     save_image: Optional[bool] = False,
     image_name: Optional[str] = None,
     show_inline: Optional[bool] = False,
-    fixed_image_size: Optional[bool] = None,
+    fixed_image_size: Optional[int] = None,
 ):
     """Main function for optimizing a given objective
 
@@ -106,8 +106,7 @@ def render_vis(
             else:
                 transforms.append(preprocess_f)
 
-    #TODO make work for other sizes
-    # Upsample images smaller than 224
+    # Upsample or downsample images that don't fit the given input size
     image_shape = image_f().shape
     if fixed_image_size is not None:
         new_size = fixed_image_size
@@ -117,7 +116,7 @@ def render_vis(
         new_size = None
     if new_size:
         transforms.append(
-            torch.nn.Upsample(size=new_size, mode="bilinear", align_corners=True)
+            lambda x: torch.nn.functional.interpolate(x, size=new_size, mode='bilinear', align_corners=True)
         )
 
     transform_f = transform.compose(transforms)
