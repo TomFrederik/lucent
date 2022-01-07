@@ -17,31 +17,68 @@ from __future__ import absolute_import, division, print_function
 
 import warnings
 from collections import OrderedDict
+from typing import Callable, Iterable
+
+import einops
 import numpy as np
-from tqdm import tqdm
 from PIL import Image
+from tqdm import tqdm
 import torch
 
-from lucent.optvis import objectives, transform, param
 from lucent.misc.io import show
+from lucent.optvis import objectives, transform, param
 
 
 def render_vis(
-    model,
-    objective_f,
-    param_f=None,
-    optimizer=None,
-    transforms=None,
-    thresholds=(512,),
-    verbose=False,
-    preprocess=True,
-    progress=True,
-    show_image=True,
-    save_image=False,
-    image_name=None,
-    show_inline=False,
-    fixed_image_size=None,
+    model: torch.nn.Module,
+    objective_f: Callable,
+    param_f: Optional[Callable] = None,
+    optimizer: Optional[Callable[Any, torch.optim.Optimizer]] = None,
+    transforms: Optional[Iterable[Callable[torch.Tensor, torch.Tensor]]] = None,
+    thresholds: Iterable[int] = (512,),
+    verbose: Optional[bool] = False,
+    preprocess: Optional[bool] = True,
+    preprocess_f: Optional[Callable[torch.Tensor, torch.Tensor]] = None,
+    progress: Optional[bool] = True,
+    show_image: Optional[bool] = True,
+    save_image: Optional[bool] = False,
+    image_name: Optional[str] = None,
+    show_inline: Optional[bool] = False,
+    fixed_image_size: Optional[bool] = None,
 ):
+    """Main function for optimizing a given objective
+
+    :param model: [description]
+    :type model: torch.nn.Module
+    :param objective_f: [description]
+    :type objective_f: Callable
+    :param param_f: [description], defaults to None
+    :type param_f: Optional[Callable], optional
+    :param optimizer: [description], defaults to None
+    :type optimizer: Optional[Callable[Any, torch.optim.Optimizer]], optional
+    :param transforms: [description], defaults to None. None is translated to transform.standard_transforms. To use no transforms at all supply an empty list.
+    :type transforms: Optional[Iterable[Callable[torch.Tensor, torch.Tensor]]], optional
+    :param thresholds: [description], defaults to (512,)
+    :type thresholds: Iterable[int], optional
+    :param verbose: [description], defaults to False
+    :type verbose: Optional[bool], optional
+    :param preprocess: [description], defaults to True
+    :type preprocess: Optional[bool], optional
+    :param progress: [description], defaults to True
+    :type progress: Optional[bool], optional
+    :param show_image: [description], defaults to True
+    :type show_image: Optional[bool], optional
+    :param save_image: [description], defaults to False
+    :type save_image: Optional[bool], optional
+    :param image_name: [description], defaults to None
+    :type image_name: Optional[str], optional
+    :param show_inline: [description], defaults to False
+    :type show_inline: Optional[bool], optional
+    :param fixed_image_size: [description], defaults to None
+    :type fixed_image_size: Optional[bool], optional
+    :return: [description]
+    :rtype: [type]
+    """
     if param_f is None:
         param_f = lambda: param.image(128)
     # param_f is a function that should return two things
@@ -62,10 +99,14 @@ def render_vis(
             # Original Tensorflow InceptionV1 takes input range [-117, 138]
             transforms.append(transform.preprocess_inceptionv1())
         else:
-            # Assume we use normalization for torchvision.models
-            # See https://pytorch.org/docs/stable/torchvision/models.html
-            transforms.append(transform.normalize())
+            if preprocess_f is None:
+                # Assume we use normalization for torchvision.models
+                # See https://pytorch.org/vision/stable/models.html
+                transforms.append(transform.normalize())
+            else:
+                transforms.append(preprocess_f)
 
+    #TODO make work for other sizes
     # Upsample images smaller than 224
     image_shape = image_f().shape
     if fixed_image_size is not None:
@@ -124,6 +165,13 @@ def render_vis(
             print("Loss at step {}: {:.3f}".format(i, objective_f(hook)))
         images.append(tensor_to_img_array(image_f()))
 
+        # re-raising error so that you can exit prematurely
+        interrupt = None
+        while interrupt not in ['y', 'n']:
+            interrupt = input('Do you want to stop all queued-up optimizations as well? (y/n)')
+        if interrupt == 'y':
+            raise KeyboardInterrupt('Cancelling all queued-up optimizations...')
+
     if save_image:
         export(image_f(), image_name)
     if show_inline:
@@ -133,18 +181,32 @@ def render_vis(
     return images
 
 
-def tensor_to_img_array(tensor):
+def tensor_to_img_array(tensor: torch.Tensor) -> np.ndarray:
+    """Converts tensor to image with channel-last ordering
+
+    :param tensor: tensor that should be converted
+    :type tensor: torch.Tensor
+    :return: image with channel-last ordering
+    :rtype: np.ndarray
+    """
     image = tensor.cpu().detach().numpy()
-    image = np.transpose(image, [0, 2, 3, 1])
+    image = einops.rearrange(image, 'b c h w -> b h w c')
     return image
 
 
-def view(tensor):
+def view(tensor: torch.Tensor) -> None:
+    """Displays tensor on screen by converting it to an image first
+
+    :param tensor: tensor to be displayed
+    :type tensor: torch.Tensor
+    :raises ValueError: image has invalid shape
+    """
     image = tensor_to_img_array(tensor)
-    assert len(image.shape) in [
-        3,
-        4,
-    ], "Image should have 3 or 4 dimensions, invalid image shape {}".format(image.shape)
+    
+    # check image shape
+    if len(image.shape) not in (3, 4):
+        raise ValueError(f"Image should have 3 or 4 dimensions, but has shape {image.shape}")
+
     # Change dtype for PIL.Image
     image = (image * 255).astype(np.uint8)
     if len(image.shape) == 4:
@@ -152,13 +214,21 @@ def view(tensor):
     Image.fromarray(image).show()
 
 
-def export(tensor, image_name=None):
-    image_name = image_name or "image.jpg"
+def export(tensor: torch.Tensor, image_name: Optional[str] = "image.jpg") -> None:
+    """Saves tensor as image to disk under image_name.
+
+    :param tensor: tensor to be saved
+    :type tensor: torch.Tensor
+    :param image_name: absolute path to image, defaults to "image.jpg"
+    :type image_name: Optional[str], optional
+    :raises ValueError: image has invalid shape
+    """
     image = tensor_to_img_array(tensor)
-    assert len(image.shape) in [
-        3,
-        4,
-    ], "Image should have 3 or 4 dimensions, invalid image shape {}".format(image.shape)
+    
+    # check image shape
+    if len(image.shape) not in (3, 4):
+        raise ValueError(f"Image should have 3 or 4 dimensions, but has shape {image.shape}")
+
     # Change dtype for PIL.Image
     image = (image * 255).astype(np.uint8)
     if len(image.shape) == 4:
@@ -166,44 +236,3 @@ def export(tensor, image_name=None):
     Image.fromarray(image).save(image_name)
 
 
-class ModuleHook:
-    def __init__(self, module):
-        self.hook = module.register_forward_hook(self.hook_fn)
-        self.module = None
-        self.features = None
-
-    def hook_fn(self, module, input, output):
-        self.module = module
-        self.features = output
-
-    def close(self):
-        self.hook.remove()
-
-
-def hook_model(model, image_f):
-    features = OrderedDict()
-
-    # recursive hooking function
-    def hook_layers(net, prefix=[]):
-        if hasattr(net, "_modules"):
-            for name, layer in net._modules.items():
-                if layer is None:
-                    # e.g. GoogLeNet's aux1 and aux2 layers
-                    continue
-                features["_".join(prefix + [name])] = ModuleHook(layer)
-                hook_layers(layer, prefix=prefix + [name])
-
-    hook_layers(model)
-
-    def hook(layer):
-        if layer == "input":
-            out = image_f()
-        elif layer == "labels":
-            out = list(features.values())[-1].features
-        else:
-            assert layer in features, f"Invalid layer {layer}. Retrieve the list of layers with `lucent.modelzoo.util.get_model_layers(model)`."
-            out = features[layer].features
-        assert out is not None, "There are no saved feature maps. Make sure to put the model in eval mode, like so: `model.to(device).eval()`. See README for example."
-        return out
-
-    return hook
