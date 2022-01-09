@@ -28,11 +28,12 @@ import torch
 from lucent.misc.io import show
 from lucent.optvis import objectives, transform, param
 from lucent.optvis.hooks import hook_model
+from lucent.optvis.objectives import Objective
 
 
 def render_vis(
     model: torch.nn.Module,
-    objective_f: Callable,
+    objective_f: Union[str, Objective, Callable],
     param_f: Optional[Callable] = None,
     optimizer: Optional[Callable[Any, torch.optim.Optimizer]] = None,
     transforms: Optional[Iterable[Callable[torch.Tensor, torch.Tensor]]] = None,
