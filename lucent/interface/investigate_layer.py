@@ -8,11 +8,11 @@ from PIL import Image
 import streamlit as st
 import torch
 
-from lucent.interface.utils import join_layer_channel, update_image_db, display_image, init
+from lucent.interface.utils import update_image_db, display_image, init, display_database, generate_layer_features
 
 
 def update_identifier():
-    st.session_state.identifier = join_layer_channel(st.session_state.layer, st.session_state.channel)
+    st.session_state.identifier = st.session_state.layer
 
 
 if 'layer_names' not in st.session_state:
@@ -76,7 +76,6 @@ with st.sidebar:
         
         submitted = st.form_submit_button("Save config")
         if submitted:
-            print(f'\n{st.session_state.layer = }, {st.session_state.channel = }\n')
             st.session_state.model = init(st.session_state.model_name)
             st.write('Config saved!')
 
@@ -84,7 +83,9 @@ with st.sidebar:
     st.checkbox("Save images to data dir (won't work if loading images)", value=False, key='save_data') 
 
     st.selectbox('layer', options=st.session_state.layer_names, key='layer', on_change=update_identifier, index=0)
-    st.text_input('channel', value='1', key='channel', on_change=update_identifier)
+    st.button('Generate Layer Features', on_click=generate_layer_features, args=(st.session_state.model, st.session_state.layer))
+    st.button('Display Database', on_click=display_database)
+    st.button('Display Layer', on_click=display_database, kwargs=dict(given_layer=st.session_state.layer))
 
 
 # init and update data base of features
@@ -104,5 +105,3 @@ if 'layer' not in st.session_state:
 
 if st.session_state.load_data:
     update_image_db(st.session_state.datadir, st.session_state.model_name)
-
-st.button('Generate/Load image', on_click=display_image, args=(st.session_state.model, st.session_state.identifier,))

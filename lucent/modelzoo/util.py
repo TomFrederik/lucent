@@ -21,25 +21,111 @@ from collections import OrderedDict
 from typing import List, Optional, Union
 
 
-def get_model_layers(
-    model: torch.nn.Module, 
-    getLayerRepr: Optional[bool] = False
-) -> Union[List[str], OrderedDict[str, str]]:
+import torch.nn as nn
 
+ACTIVATIONS = [
+    nn.ELU,
+    nn.Hardshrink,
+    nn.Hardsigmoid,
+    nn.Hardtanh,
+    nn.Hardswish,
+    nn.LeakyReLU,
+    nn.LogSigmoid,
+    nn.PReLU,
+    nn.ReLU,
+    nn.ReLU6,
+    nn.PReLU,
+    nn.SELU,
+    nn.CELU,
+    nn.GELU,
+    nn.Sigmoid,
+    nn.SiLU,
+    nn.Mish,
+    nn.Softplus,
+    nn.Softshrink,
+    nn.Softsign,
+    nn.Tanh,
+    nn.Tanhshrink,
+    nn.Threshold,
+    nn.GLU,
+    nn.Softmin,
+    nn.Softmax,
+    nn.Softmax2d,
+    nn.LogSoftmax,
+    nn.AdaptiveLogSoftmaxWithLoss,
+]
+
+NORMALIZATIONS = [
+    nn.BatchNorm1d,
+    nn.BatchNorm2d,
+    nn.BatchNorm3d,
+    nn.LazyBatchNorm1d,
+    nn.LazyBatchNorm2d,
+    nn.LazyBatchNorm3d,
+    nn.GroupNorm,
+    nn.SyncBatchNorm,
+    nn.InstanceNorm1d,
+    nn.InstanceNorm2d,
+    nn.InstanceNorm3d,
+    nn.LazyInstanceNorm1d,
+    nn.LazyInstanceNorm2d,
+    nn.LazyInstanceNorm3d,
+    nn.LayerNorm,
+    nn.LocalResponseNorm,
+]
+
+POOLINGS = [
+    nn.MaxPool1d,
+    nn.MaxPool2d,
+    nn.MaxPool3d,
+    nn.MaxUnpool1d,
+    nn.MaxUnpool2d,
+    nn.MaxUnpool3d,
+    nn.AvgPool1d,
+    nn.AvgPool2d,
+    nn.AvgPool3d,
+    nn.FractionalMaxPool2d,
+    nn.FractionalMaxPool3d,
+    nn.LPPool1d,
+    nn.LPPool2d,
+    nn.AdaptiveMaxPool1d,
+    nn.AdaptiveMaxPool2d,
+    nn.AdaptiveMaxPool3d,
+    nn.AdaptiveAvgPool1d,
+    nn.AdaptiveAvgPool2d,
+    nn.AdaptiveAvgPool3d,
+]
+
+
+def get_model_layers(
+    model: nn.Module, 
+    getLayerRepr: Optional[bool] = False,
+    excludeNorms: Optional[bool] = True,
+    excludeActs: Optional[bool] = True,
+    excludePools: Optional[bool] = True
+) -> Union[List[str], OrderedDict[str, str]]:
     """Get the names of all layers of a network. The names are given in the format that can be used
        to access them via objectives.
 
     :param model: the network to get the names of
-    :param getLayerRepr: whether to return a OrderedDict of layer names, layer representation string pair. If False just return a list of names.
     :type model: torch.nn.Module
+    :param getLayerRepr: whether to return a OrderedDict of layer names, layer representation string pair. If False just return a list of names.
+    :type getLayerRepr: Optional[bool], optional
+    :param excludeNorms: whether to exclude normalization layers, defaults to True
+    :type excludeNorms: Optional[bool], optional
+    :param excludeActs: whether to exclude Activation layers, defaults to True
+    :type excludeActs: Optional[bool], optional
+    :param excludePools: whether to exclude Pooling layers, defaults to True
+    :type excludePools: Optional[bool], optional
     :raises ValueError: model has wrong type
     :raises ValueError: model has no modules
     :return: dict of name, repr pairs or just list of names of all layers (including activations if they are instantiated as layers)
     :rtype: Union[List[str], OrderedDict[str, str]]
     """
-    
+
+
     # check input
-    if not isinstance(model, torch.nn.Module):
+    if not isinstance(model, nn.Module):
         raise ValueError(f"model should have type torch.nn.Module but has type {type(model)}")
 
     layers = OrderedDict() if getLayerRepr else []
@@ -56,6 +142,9 @@ def get_model_layers(
                     not isinstance(layer, nn.Sequential)
                     and not isinstance(layer, nn.ModuleDict)
                     and not isinstance(layer, nn.ModuleList)
+                    and not (any(isinstance(layer, norm) for norm in NORMALIZATIONS) and excludeNorms) # exclude normalizations
+                    and not (any(isinstance(layer, acts) for acts in ACTIVATIONS) and excludeActs) # exclude activations
+                    and not (any(isinstance(layer, pool) for pool in POOLINGS) and excludePools) # exclude poolings
                 ):
                     if getLayerRepr:
                         layers["_".join(prefix+[name])] = layer.__repr__()

@@ -17,7 +17,7 @@ from __future__ import absolute_import, division, print_function
 
 import warnings
 from collections import OrderedDict
-from typing import Callable, Iterable, Optional, Any
+from typing import Callable, Iterable, Optional, Any, Union
 
 import einops
 import numpy as np
