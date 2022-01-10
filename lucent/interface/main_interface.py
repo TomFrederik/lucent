@@ -31,7 +31,7 @@ with st.sidebar:
                 'squeezenet1_0',
                 'vgg16',
                 'densenet161',
-                'inception_V3',
+                'inception_v3',
                 'googlenet',
                 'shufflenet_v2_x1_0',
                 'mobilenet_v2',

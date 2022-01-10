@@ -10,7 +10,7 @@ import torchvision.models as models
 from lucent.modelzoo.util import get_model_layers
 from lucent.optvis import param
 from lucent.optvis.render import render_vis
-from lucent.optvis.objectives import Objective, channel
+import lucent.optvis.objectives as objectives
 
 def display_image(
     model: Optional[torch.nn.Module] = None, 
@@ -133,36 +133,60 @@ def generate_layer_features(
     model: torch.nn.Module,
     layer: str,
 ) -> None:
+
+    # build identifiers
+    identifiers = [join_layer_channel(layer, str(name)) for name in range(5)] # TODO
+    # TODO: deal with batch size
     
-    pass
+    # generate images
+    generate_batch_images(model, identifiers)
 
 
 def generate_batch_images(
     model: torch.nn.Module, 
     identifiers: List[str],
-):
-    
+) -> None:
     # only generate images that are not already in database
+    to_remove = []
     if st.session_state.load_data:
-        for i, ident in enumerate(identifiers):
-            if check_database(identifier) is not None:
-                del identifiers[i]
+        for ident in identifiers:
+            if check_database(ident) is not None:
+                to_remove.append(ident)
+        for ident in to_remove:
+            identifiers.remove(ident)
     
-    if len(identifiers) > 0:
-        # set up parameterization for batch optimization
-        batch_size = len(identifiers)
-        param_f = param.image(128, batch_size=batch_size)
+    if len(identifiers) == 0:
+        return None
+    
+    # set up parameterization for batch optimization
+    batch_size = len(identifiers)
+    print(identifiers)
+    # param_f = lambda: param.image(128, batch=batch_size)
+    param_f = lambda: param.image(128, batch=batch_size)
 
-        objective = Objectives.sum(channel(ident) for ident in identifiers) # TODO hier weitermachen mit batching
-        images = (render_vis(model, ident, show_image=False, thresholds=(64,))[0][0] * 255).astype(np.uint8) # TODO
-        image = Image.fromarray(image)
-        layer, name = split_identifier(identifier)
-        if st.session_state.save_data:
+    channels = list(map(lambda x: int(x[1]), map(split_identifier, identifiers)))
+    layers = list(map(lambda x: x[0], map(split_identifier, identifiers)))
+
+    # objective = Objective.sum(channel(*split_identifier(ident), batch=i) for i, ident in enumerate(identifiers))
+    objective = objectives.Objective.sum([objectives.channel(layer, channel, batch=i) for i, (layer, channel) in enumerate(zip(layers, channels))])
+    images = render_vis(
+        model, 
+        objective_f=objective,
+        param_f=param_f, 
+        show_image=True, 
+        thresholds=(64,)
+    )[0] # np.ndarray of shape (B, H, W, C)
+    images = map(lambda x: (x * 255).astype(np.uint8), images) # map to 8-bit unsigned integer
+    images = list(map(lambda x: Image.fromarray(x), images))
+    if st.session_state.save_data:
+        for layer, channel, image in zip(layers, channels, images):    
             layer_path = os.path.join(st.session_state.datadir, st.session_state.model_name, layer)
             os.makedirs(layer_path, exist_ok=True)
-            image.save(os.path.join(layer_path, name) + '.jpg')
-        
-        # add newly generated image to database
-        st.session_state.database = st.session_state.database | {layer: {name: image}}
-
-    return image
+            image.save(os.path.join(layer_path, str(channel)) + '.jpg')
+    
+    # add newly generated image to database
+    unique_layers = set(layers)
+    add_to_db = {layer: dict() for layer in unique_layers}
+    for layer, channel, image in zip(layers, channels, images):
+        add_to_db[layer][str(channel)] = image
+    st.session_state.database = st.session_state.database | add_to_db

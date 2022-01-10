@@ -17,12 +17,22 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import Optional, Tuple, Callable, List
+
 from lucent.optvis.param.spatial import pixel_image, fft_image
 from lucent.optvis.param.color import to_valid_rgb
+import torch
 
-
-def image(w, h=None, sd=None, batch=None, decorrelate=True,
-          fft=True, channels=None):
+def image(
+    w: int, 
+    h: Optional[int] = None, 
+    sd: Optional[float] = None, 
+    batch: Optional[int] = None, 
+    decorrelate: Optional[bool] = True,
+    fft: Optional[bool] = True, 
+    channels: Optional[int] = None,
+) -> Tuple[List[torch.Tensor], Callable]:
+    
     h = h or w
     batch = batch or 1
     ch = channels or 3

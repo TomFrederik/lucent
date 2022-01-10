@@ -18,6 +18,22 @@ def update_identifier():
 if 'layer_names' not in st.session_state:
         st.session_state['layer_names'] = []
 
+# init and update data base of features
+if 'database' not in st.session_state:
+    st.session_state['database'] = dict()
+
+
+# init identifier
+if 'identifier' not in st.session_state:
+    st.session_state['identifier'] = None
+
+if 'model' not in st.session_state:
+    st.session_state['model'] = None
+
+if 'layer' not in st.session_state:
+    st.session_state['layer'] = None
+
+
 with st.sidebar:
     with st.form('config'):
         st.write('## Config')
@@ -31,7 +47,7 @@ with st.sidebar:
                 'squeezenet1_0',
                 'vgg16',
                 'densenet161',
-                'inception_V3',
+                'inception_v3',
                 'googlenet',
                 'shufflenet_v2_x1_0',
                 'mobilenet_v2',
@@ -88,20 +104,6 @@ with st.sidebar:
     st.button('Display Layer', on_click=display_database, kwargs=dict(given_layer=st.session_state.layer))
 
 
-# init and update data base of features
-if 'database' not in st.session_state:
-    st.session_state['database'] = dict()
-
-
-# init identifier
-if 'identifier' not in st.session_state:
-    st.session_state['identifier'] = None
-
-if 'model' not in st.session_state:
-    st.session_state['model'] = None
-
-if 'layer' not in st.session_state:
-    st.session_state['layer'] = None
 
 if st.session_state.load_data:
     update_image_db(st.session_state.datadir, st.session_state.model_name)
