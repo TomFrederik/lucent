@@ -46,7 +46,7 @@ setup(
         "coveralls",
         "scikit-learn",
         "einops",
-        "tomli=1.2.3",
+        "tomli==1.2.3",
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
