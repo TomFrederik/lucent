@@ -14,7 +14,7 @@ python:
   version: 3.9
   install:
     - method: setuptools
-      path: lucent
+      path: .
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
