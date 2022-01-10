@@ -41,7 +41,7 @@ setup(
         "future",
         "decorator",
         "pytest",
-        "pytest-mock",
+        # "pytest-mock",
         "coverage",
         "coveralls",
         "scikit-learn",
