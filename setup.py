@@ -41,10 +41,12 @@ setup(
         "future",
         "decorator",
         "pytest",
-        "pytest-mock",
+        # "pytest-mock",
         "coverage",
         "coveralls",
-        "scikit-learn"
+        "scikit-learn",
+        "einops",
+        "tomli==1.2.3",
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
@@ -54,7 +56,7 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Mathematics",
