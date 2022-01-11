@@ -40,7 +40,7 @@ def render_vis(
     thresholds: Iterable[int] = (512,),
     verbose: Optional[bool] = False,
     preprocess: Optional[bool] = True,
-    preprocess_f: Optional[Callable[torch.Tensor, torch.Tensor]] = None,
+    preprocess_f: Optional[Callable[[torch.Tensor], torch.Tensor]] = None,
     progress: Optional[bool] = True,
     show_image: Optional[bool] = True,
     save_image: Optional[bool] = False,
