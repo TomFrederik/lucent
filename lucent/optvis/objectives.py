@@ -15,7 +15,7 @@
 
 from __future__ import absolute_import, division, print_function, annotations
 
-from typing import Iterable, TypeVar, Callable, Optional, Any
+from typing import Iterable, TypeVar, Callable, Optional, Any, Union
 
 from decorator import decorator
 import numpy as np
@@ -39,7 +39,7 @@ class Objective:
         self, 
         objective_func: Callable[[torch.nn.Module], Any], 
         name: Optional[str] = "", 
-        description: Optional[str] = ""
+        description: Optional[str] = "",
     ) -> None:
         """Constructor for Objective
 
@@ -115,7 +115,7 @@ class Objective:
         return self.__add__(other)
 
 
-def wrap_objective() -> Callable:
+def wrap_objective() -> Callable[[Callable], Objective]:
     """Decorator to construct objectives from function definitions
 
     :return: Objective that is constructed from the decorated function
@@ -136,7 +136,13 @@ def handle_batch(batch=None):
 
 
 @wrap_objective()
-def neuron(layer, n_channel, x=None, y=None, batch=None):
+def neuron(
+    layer: str, 
+    n_channel: int, 
+    x: Optional[int] = None, 
+    y: Optional[int] = None, 
+    batch: Optional[int] = None,
+) -> Callable:
     """Visualize a single neuron of a single channel.
 
     Defaults to the center neuron. When width and height are even numbers, we
@@ -154,7 +160,20 @@ def neuron(layer, n_channel, x=None, y=None, batch=None):
                                       |   |   |   |   |
                                       +---+---+---+---+
 
+    :param layer: Name of the layer
+    :type layer: str
+    :param n_channel: Channel/neuron number
+    :type n_channel: int
+    :param x: x-position, defaults to None
+    :type x: Optional[int], optional
+    :param y: y-position, defaults to None
+    :type y: Optional[int], optional
+    :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
+    :type batch: Optional[int], optional
+    :return: Objective function to optimize input for a single position of a single channel
+    :rtype: Callable
     """
+    
     @handle_batch(batch)
     def inner(model):
         layer_t = model(layer)
@@ -164,17 +183,49 @@ def neuron(layer, n_channel, x=None, y=None, batch=None):
 
 
 @wrap_objective()
-def channel(layer, n_channel, batch=None):
-    """Visualize a single channel"""
+def channel(
+    layer: str, 
+    n_channel: int, 
+    batch: Optional[int] = None,
+) -> Callable:
+    """Visualize a single channel
+
+    :param layer: Name of the layer
+    :type layer: str
+    :param n_channel: Channel number
+    :type n_channel: int
+    :param batch: which position at the batch dim of the image tensor this objective is applied to, defaults to None
+    :type batch: Optional[int], optional
+    :return: Objective function to optimize input for a single channel
+    :rtype: Callable
+    """
     @handle_batch(batch)
     def inner(model):
         return -model(layer)[:, n_channel].mean()
     return inner
 
 @wrap_objective()
-def neuron_weight(layer, weight, x=None, y=None, batch=None):
-    """ Linearly weighted channel activation at one location as objective
-    weight: a torch Tensor vector same length as channel.
+def neuron_weight(
+    layer: str, 
+    weight: torch.Tensor, 
+    x: Optional[int] = None, 
+    y: Optional[int] = None, 
+    batch: Optional[int] = None,
+) -> Callable:
+    """Linearly weighted channel activation at one location as objective
+
+    :param layer: Name of the layer
+    :type layer: str
+    :param weight: A torch.Tensor of same length as the number of channels
+    :type weight: torch.Tensor
+    :param x: x-position, defaults to None
+    :type x: Optional[int], optional
+    :param y: y-position, defaults to None
+    :type y: Optional[int], optional
+    :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
+    :type batch: Optional[int], optional
+    :return: Objective function to optimize input for a linearly weighted channel activation at one location
+    :rtype: Callable
     """
     @handle_batch(batch)
     def inner(model):
@@ -187,9 +238,24 @@ def neuron_weight(layer, weight, x=None, y=None, batch=None):
     return inner
 
 @wrap_objective()
-def channel_weight(layer, weight, batch=None):
+def channel_weight(
+    layer: str, 
+    weight: torch.Tensor, 
+    batch: Optional[int] = None,
+) -> Callable:
     """ Linearly weighted channel activation as objective
-    weight: a torch Tensor vector same length as channel. """
+    
+    :param layer: Name of the layer
+    :type layer: str
+    :param weight: A torch.Tensor of same length as the number of channels
+    :type weight: torch.Tensor
+    :param batch: which position at the batch dim of the image tensor this objective is applied to, defaults to None
+    :type batch: Optional[int], optional
+    :return: Objective function to optimize input for a linearly weighted channel activation
+    :rtype: Callable
+    """
+    #TODO add option to normalize the weight vector and set default to True?
+
     @handle_batch(batch)
     def inner(model):
         layer_t = model(layer)
@@ -197,9 +263,34 @@ def channel_weight(layer, weight, batch=None):
     return inner
 
 @wrap_objective()
-def localgroup_weight(layer, weight=None, x=None, y=None, wx=1, wy=1, batch=None):
-    """ Linearly weighted channel activation around some spot as objective
-    weight: a torch Tensor vector same length as channel. """
+def localgroup_weight(
+    layer: str, 
+    weight: Optional[torch.Tensor] = None, 
+    x: Optional[int] = None, 
+    y: Optional[int]=None, 
+    wx: Optional[int] = 1, 
+    wy: Optional[int] = 1, 
+    batch: Optional[int] = None,
+) -> Callable:
+    """Linearly weighted channel activation around some spot as objective
+
+    :param layer: Name of the layer
+    :type layer: str
+    :param weight: A torch.Tensor of same length as the number of channels, defaults to None
+    :type weight: Optional[torch.Tensor], optional
+    :param x: x-position, defaults to None
+    :type x: Optional[int], optional
+    :param y: y-position, defaults to None
+    :type y: Optional[int], optional
+    :param wx: window size in x-direction, defaults to 1
+    :type wx: Optional[int], optional
+    :param wy: window size in y-direction, defaults to 1
+    :type wy: Optional[int], optional
+    :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
+    :type batch: Optional[int], optional
+    :return: Objective function to optimize 
+    :rtype: Callable
+    """
     @handle_batch(batch)
     def inner(model):
         layer_t = model(layer)
@@ -209,24 +300,26 @@ def localgroup_weight(layer, weight=None, x=None, y=None, wx=1, wy=1, batch=None
             return -(layer_t[:, :, y:y + wy, x:x + wx] * weight.view(1, -1, 1, 1)).mean()
     return inner
 
+#TODO this and channel weight should be merged together, I think they do basically the same thing?
+#TODO would need to add an option for the loss function though (cosine vs wheighted)
 @wrap_objective()
-def direction(layer, direction, batch=None):
-    """Visualize a direction
+def direction(
+    layer: str, 
+    direction: torch.Tensor, 
+    batch: Optional[int] = None,
+) -> Callable:
+    """Visualize a direction in activation space.
 
-    InceptionV1 example:
-    > direction = torch.rand(512, device=device)
-    > obj = objectives.direction(layer='mixed4c', direction=direction)
-
-    Args:
-        layer: Name of layer in model (string)
-        direction: Direction to visualize. torch.Tensor of shape (num_channels,)
-        batch: Batch number (int)
-
-    Returns:
-        Objective
-
+    :param layer: Name of the layer
+    :type layer: str
+    :param direction: torch.Tensor of shape (num_channels, ) giving the direction
+    :type direction: torch.Tensor
+    :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
+    :type batch: Optional[int], optional
+    :return: Objection function to optimize input for a particular direction in activation space.
+    :rtype: Callable
     """
-
+    #TODO add option to normalize the direction vector and set default to True?
     @handle_batch(batch)
     def inner(model):
         return -torch.nn.CosineSimilarity(dim=1)(direction.reshape(
@@ -236,27 +329,29 @@ def direction(layer, direction, batch=None):
 
 
 @wrap_objective()
-def direction_neuron(layer,
-                     direction,
-                     x=None,
-                     y=None,
-                     batch=None):
+def direction_neuron(
+    layer: str,
+    direction: torch.Tensor,
+    x: Optional[int] = None,
+    y: Optional[int] = None,
+    batch: Optional[int] = None,
+) -> Callable:
     """Visualize a single (x, y) position along the given direction
 
     Similar to the neuron objective, defaults to the center neuron.
 
-    InceptionV1 example:
-    > direction = torch.rand(512, device=device)
-    > obj = objectives.direction_neuron(layer='mixed4c', direction=direction)
-
-    Args:
-        layer: Name of layer in model (string)
-        direction: Direction to visualize. torch.Tensor of shape (num_channels,)
-        batch: Batch number (int)
-
-    Returns:
-        Objective
-
+    :param layer: Name of layer
+    :type layer: str
+    :param direction: torch.Tensor of shape (num_channels, ) that gives the direction optimize
+    :type direction: torch.Tensor
+    :param x: x-position, defaults to None
+    :type x: Optional[int], optional
+    :param y: y-position, defaults to None
+    :type y: Optional[int], optional
+    :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
+    :type batch: Optional[int], optional
+    :return: Objective function to optimize input for a particular direction in activation space at a single position
+    :rtype: Callable
     """
 
     @handle_batch(batch)
@@ -270,6 +365,7 @@ def direction_neuron(layer,
     return inner
 
 
+#TODO What does this do and shouldn't it be in some other file?
 def _torch_blur(tensor, out_c=3):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     depth = tensor.shape[1]
@@ -286,7 +382,7 @@ def _torch_blur(tensor, out_c=3):
 @wrap_objective()
 def blur_input_each_step():
     """Minimizing this objective is equivelant to blurring input each step.
-    Optimizing (-k)*blur_input_each_step() is equivelant to:
+    Optimizing (-k)*blur_input_each_step() is equivalant to:
     input <- (1-k)*input + k*blur(input)
     An operation that was used in early feature visualization work.
     See Nguyen, et al., 2015.
@@ -386,17 +482,17 @@ def diversity(layer):
     return inner
 
 
-def as_objective(obj):
-    """Convert obj into Objective class.
 
-    Strings of the form "layer:n" become the Objective channel(layer, n).
-    Objectives are returned unchanged.
+#TODO is it good that this also leaves callables unchanged? Seems to me like
+#     it would be better if it converts everything to instances of Objective
+def as_objective(obj: Union[Objective, Callable, str]) -> Union[Callable, Objective]:
+    """Strings of the form "layer:n" become the Objective channel(layer, n).
+    Objectives and Callables are returned unchanged.
 
-    Args:
-        obj: string or Objective.
-
-    Returns:
-        Objective
+    :param obj: Objective, Callable or layer:channel string
+    :type obj: Union[Objective, Callable, str]
+    :return: Objective instance or Callable representing the objective function
+    :rtype: Union[Callable, Objective]
     """
     if isinstance(obj, Objective):
         return obj
