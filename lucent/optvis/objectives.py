@@ -15,7 +15,7 @@
 
 from __future__ import absolute_import, division, print_function, annotations
 
-from typing import Iterable, TypeVar
+from typing import Iterable, TypeVar, Callable, Optional, Any
 
 from decorator import decorator
 import numpy as np
@@ -27,9 +27,23 @@ from lucent.optvis.objectives_util import _make_arg_str, _extract_act_pos, _T_ha
 T = TypeVar('T')
 
 class Objective:
-    """[summary]
+    """Base class for objectives. Implements basic arithmetic on objectives.
     """
-    def __init__(self, objective_func, name="", description=""):
+    def __init__(
+        self, 
+        objective_func: Callable[[torch.nn.Module], Any], 
+        name: Optional[str] = "", 
+        description: Optional[str] = ""
+    ) -> None:
+        """Constructor for Objective
+
+        :param objective_func: Objective function that evaluates an objective on a given model
+        :type objective_func: Callable[[torch.nn.Module], Any]
+        :param name: Name of the objective, defaults to ""
+        :type name: Optional[str], optional
+        :param description: Description of the objective, defaults to ""
+        :type description: Optional[str], optional
+        """
         self.objective_func = objective_func
         self.name = name
         self.description = description
@@ -50,6 +64,17 @@ class Objective:
 
     @classmethod
     def sum(cls: T, objs: Iterable[Objective]) -> T:
+        """Alternative to sum(objs) which would return a nested description Sum(d1 + Sum(d2 + Sum(...))) for descriptions di which is unreadable.
+        Using this method will produce description Sum(d1 + d2 + ...) instead.
+        To call this, do Objective.sum(objs).
+
+        :param cls: Class of the calling object. Either Objective or one of its inheritants. 
+        :type cls: T
+        :param objs: The objectives that should be summed.
+        :type objs: Iterable[Objective]
+        :return: New Objective instance with the sum of the objective functions as objective function.
+        :rtype: T
+        """
         objective_func = lambda T: sum([obj(T) for obj in objs])
         descriptions = [obj.description for obj in objs]
         description = "Sum(" + " +\n".join(descriptions) + ")"
@@ -81,11 +106,17 @@ class Objective:
     def __rmul__(self, other):
         return self.__mul__(other)
 
+    # need this for summation to work properly
     def __radd__(self, other):
         return self.__add__(other)
 
 
-def wrap_objective():
+def wrap_objective() -> Callable:
+    """Decorator to construct objectives from function definitions
+
+    :return: Objective that is constructed from the decorated function
+    :rtype: Callable[[Callable], Objective]
+    """
     @decorator
     def inner(func, *args, **kwds):
         objective_func = func(*args, **kwds)
@@ -95,7 +126,7 @@ def wrap_objective():
         return Objective(objective_func, objective_name, description)
     return inner
 
-
+#TODO figure out what exactly this thing here does
 def handle_batch(batch=None):
     return lambda f: lambda model: f(_T_handle_batch(model, batch=batch))
 
