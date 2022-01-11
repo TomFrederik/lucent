@@ -27,7 +27,7 @@ optvis.objectives
     
     
 optvis.objectives_util
-=================
+======================
 
 .. automodule:: lucent.optvis.objectives_util
     :imported-members:

@@ -35,8 +35,8 @@ def render_vis(
     model: torch.nn.Module,
     objective_f: Union[str, Objective, Callable],
     param_f: Optional[Callable] = None,
-    optimizer: Optional[Callable[Any, torch.optim.Optimizer]] = None,
-    transforms: Optional[Iterable[Callable[torch.Tensor, torch.Tensor]]] = None,
+    optimizer: Optional[Callable[[Any], torch.optim.Optimizer]] = None,
+    transforms: Optional[Iterable[Callable[[torch.Tensor], torch.Tensor]]] = None,
     thresholds: Iterable[int] = (512,),
     verbose: Optional[bool] = False,
     preprocess: Optional[bool] = True,
@@ -47,7 +47,7 @@ def render_vis(
     image_name: Optional[str] = None,
     show_inline: Optional[bool] = False,
     fixed_image_size: Optional[int] = None,
-):
+) -> List[np.ndarray]:
     """Main function for optimizing a given objective
 
     :param model: [description]
