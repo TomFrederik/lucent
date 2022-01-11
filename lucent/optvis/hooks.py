@@ -4,12 +4,34 @@ from typing import Callable
 import torch
 
 class ModuleHook:
-    def __init__(self, module):
+    """Hook class to save features computed during forward pass of given module
+    """
+    def __init__(self, module: torch.nn.Module) -> None:
+        """Constructor for ModuleHook
+
+        :param module: Module to which the hook should be attached. In practice, this is usually a layer within a larger Module.
+        :type module: torch.nn.Module
+        :return: None
+        """
         self.hook = module.register_forward_hook(self.hook_fn)
         self.module = None
         self.features = None
 
-    def hook_fn(self, module, input, output):
+    def hook_fn(
+        self, 
+        module: torch.nn.Module, 
+        input: torch.Tensor, 
+        output: torch.Tensor
+    ) -> None:
+        """Hooking function that stores the hooked module's output (its features)
+
+        :param module: hooked module
+        :type module: torch.nn.Module
+        :param input: inpute to module
+        :type input: torch.Tensor
+        :param output: output of module on given input
+        :type output: torch.Tensor
+        """
         self.module = module
         self.features = output
 
@@ -52,7 +74,14 @@ def hook_model(model: torch.nn.Module, image_f: Callable) -> Callable:
 
     hook_layers(model)
 
-    def hook(layer):
+    def hook(layer: str) -> torch.Tensor:
+        """Method to access stored output during forward pass
+
+        :param layer: Identifier of the layer we want to access
+        :type layer: str
+        :return: Features (output) of the layer during its last forward pass.
+        :rtype: torch.Tensor
+        """
         if layer == "input":
             out = image_f()
         elif layer == "labels":

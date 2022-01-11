@@ -48,39 +48,45 @@ def render_vis(
     show_inline: Optional[bool] = False,
     fixed_image_size: Optional[int] = None,
 ) -> List[np.ndarray]:
-    """Main function for optimizing a given objective
+    """Main function to perform feature visualization. It takes a model, 
+    an objective function and an image paremeterization to compute the optimal image for the given objective.
 
-    :param model: [description]
+    :param model: Model for which the objective is computed.
     :type model: torch.nn.Module
-    :param objective_f: [description]
-    :type objective_f: Callable
-    :param param_f: [description], defaults to None
+    :param objective_f: Objective that is being optimized
+    :type objective_f: Union[str, Objective, Callable]
+    :param param_f: Image parameterization function, defaults to None
     :type param_f: Optional[Callable], optional
-    :param optimizer: [description], defaults to None
-    :type optimizer: Optional[Callable[Any, torch.optim.Optimizer]], optional
-    :param transforms: [description], defaults to None. None is translated to transform.standard_transforms. To use no transforms at all supply an empty list.
-    :type transforms: Optional[Iterable[Callable[torch.Tensor, torch.Tensor]]], optional
-    :param thresholds: [description], defaults to (512,)
+    :param optimizer: Optimizer constructor function (maps parameters to optimizer instance), defaults to None #TODO just pass an optimizer directly?
+    :type optimizer: Optional[Callable[[Any], torch.optim.Optimizer]], optional
+    :param transforms: Iterable of transforms that should be applied on image before forward pass, defaults to None
+    :type transforms: Optional[Iterable[Callable[[torch.Tensor], torch.Tensor]]], optional
+    :param thresholds: Iterable of steps after which to show/save images. max(thresholds) is equal to the total amount of optimization steps, defaults to (512,)
     :type thresholds: Iterable[int], optional
-    :param verbose: [description], defaults to False
+    :param verbose: whether to be verbose, defaults to False
     :type verbose: Optional[bool], optional
-    :param preprocess: [description], defaults to True
+    :param preprocess: Whether to apply preprocessing (default or custom), defaults to True
     :type preprocess: Optional[bool], optional
-    :param progress: [description], defaults to True
+    :param preprocess_f: Preprocessing function. If None, at least torchvision.models normalization is applied, defaults to None
+    :type preprocess_f: Optional[Callable[[torch.Tensor], torch.Tensor]], optional
+    :param progress: Whether to display progress bar, defaults to True
     :type progress: Optional[bool], optional
-    :param show_image: [description], defaults to True
+    :param show_image: Whether to show images in a pop-up, defaults to True
     :type show_image: Optional[bool], optional
-    :param save_image: [description], defaults to False
+    :param save_image: Whether to save images, defaults to False
     :type save_image: Optional[bool], optional
-    :param image_name: [description], defaults to None
+    :param image_name: Overwrite default image names, defaults to None
     :type image_name: Optional[str], optional
-    :param show_inline: [description], defaults to False
+    :param show_inline: Whether to show images inline (in ipynb), defaults to False
     :type show_inline: Optional[bool], optional
-    :param fixed_image_size: [description], defaults to None
-    :type fixed_image_size: Optional[bool], optional
-    :return: [description]
-    :rtype: [type]
+    :param fixed_image_size: Set image size if necessary for your model, defaults to None #TODO change name of this kwarg and allow non-square images
+    :type fixed_image_size: Optional[int], optional
+    :raises KeyboardInterrupt:
+    :return: List of generated images as np.float32 arrays of shape (H, W, 3) with values between 0 and 1.
+    :rtype: List[np.ndarray]
     """
+
+
     if param_f is None:
         param_f = lambda: param.image(128)
     # param_f is a function that should return two things
