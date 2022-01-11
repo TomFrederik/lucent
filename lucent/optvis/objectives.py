@@ -13,17 +13,22 @@
 # limitations under the License.
 # ==============================================================================
 
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import, division, print_function, annotations
 
+from typing import Iterable, TypeVar
+
+from decorator import decorator
 import numpy as np
 import torch
 import torch.nn.functional as F
-from decorator import decorator
+
 from lucent.optvis.objectives_util import _make_arg_str, _extract_act_pos, _T_handle_batch
 
+T = TypeVar('T')
 
-class Objective():
-
+class Objective:
+    """[summary]
+    """
     def __init__(self, objective_func, name="", description=""):
         self.objective_func = objective_func
         self.name = name
@@ -43,14 +48,14 @@ class Objective():
             description = "Sum(" + " +\n".join([self.description, other.description]) + ")"
         return Objective(objective_func, name=name, description=description)
 
-    @staticmethod
-    def sum(objs):
+    @classmethod
+    def sum(cls: T, objs: Iterable[Objective]) -> T:
         objective_func = lambda T: sum([obj(T) for obj in objs])
         descriptions = [obj.description for obj in objs]
         description = "Sum(" + " +\n".join(descriptions) + ")"
         names = [obj.name for obj in objs]
         name = ", ".join(names)
-        return Objective(objective_func, name=name, description=description)
+        return cls(objective_func, name=name, description=description)
 
     def __neg__(self):
         return -1 * self
