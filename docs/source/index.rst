@@ -19,6 +19,7 @@ Contents
    usage
    api
    lucent.optvis
+   lucent.interface
 
 
 
