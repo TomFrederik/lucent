@@ -70,14 +70,15 @@ class Objective:
 
     @classmethod
     def sum(cls: T, objs: Iterable[T]) -> T:
-        """Alternative to sum(objs) which would return a nested description Sum(d1 + Sum(d2 + Sum(...))) for descriptions di which is unreadable.
+        #TODO clean up this docstring explanation a bit
+        """Alternative to sum(objs) which would return a nested description Sum(d1 + Sum(d2 + Sum(...))) for descriptions d_i which is unreadable.
         Using this method will produce description Sum(d1 + d2 + ...) instead.
         To call this, do Objective.sum(objs).
 
         :param objs: The objectives that should be summed.
         :type objs: Iterable[Objective]
         :return: New Objective instance with the sum of the objective functions as objective function.
-        :rtype: T
+        :rtype: T, where T is Objective or one of its inheritants
         """
         objective_func = lambda T: sum([obj(T) for obj in objs])
         descriptions = [obj.description for obj in objs]
