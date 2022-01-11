@@ -63,7 +63,7 @@ class Objective:
         return Objective(objective_func, name=name, description=description)
 
     @classmethod
-    def sum(cls: T, objs: Iterable[Objective]) -> T:
+    def sum(cls: T, objs: Iterable[T]) -> T:
         """Alternative to sum(objs) which would return a nested description Sum(d1 + Sum(d2 + Sum(...))) for descriptions di which is unreadable.
         Using this method will produce description Sum(d1 + d2 + ...) instead.
         To call this, do Objective.sum(objs).
