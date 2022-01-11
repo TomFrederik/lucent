@@ -68,8 +68,6 @@ class Objective:
         Using this method will produce description Sum(d1 + d2 + ...) instead.
         To call this, do Objective.sum(objs).
 
-        :param cls: Class of the calling object. Either Objective or one of its inheritants. 
-        :type cls: T
         :param objs: The objectives that should be summed.
         :type objs: Iterable[Objective]
         :return: New Objective instance with the sum of the objective functions as objective function.
