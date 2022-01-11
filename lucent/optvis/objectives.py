@@ -26,6 +26,12 @@ from lucent.optvis.objectives_util import _make_arg_str, _extract_act_pos, _T_ha
 
 T = TypeVar('T')
 
+#TODO: restructure this
+# premade objectives should go in their own submodule
+# utils in a different one
+# baseclass + decorator in its own?
+
+
 class Objective:
     """Base class for objectives. Implements basic arithmetic on objectives.
     """
