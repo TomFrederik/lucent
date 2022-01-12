@@ -13,8 +13,8 @@ research efforts.
 The original `Lucid <https://github.com/tensorflow/lucid>`_ was developed by Chris Olah, Ludwig Schubert and many others. It was initially adapted to PyTorch by Lim Swee Kiat. 
 Documentation and further development by Tom Lieberum.
 
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
+Check out the :doc:`tutorials` section for further information, including
+how to :ref:`install <installation>` the project.
 
 .. note::
 
@@ -27,6 +27,7 @@ how to :ref:`installation` the project.
    
    tutorials/installation
    tutorials/first_steps
+   tutorials/custom_objectives
 
 
 .. toctree::
