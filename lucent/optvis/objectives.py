@@ -41,6 +41,7 @@ class Objective:
         name: Optional[str] = "", 
         description: Optional[str] = "",
     ) -> None:
+    #TODO this docstring is not displayed in library, maybe if I remove the docstring of Objectives itself?
         """Constructor for Objective
 
         :param objective_func: Objective function that evaluates an objective on a given model
@@ -143,7 +144,7 @@ def neuron(
     x: Optional[int] = None, 
     y: Optional[int] = None, 
     batch: Optional[int] = None,
-) -> Callable:
+) -> Objective: #TODO Fix the ASCII art in the docstring: It's not displayed properly on the RTD website
     """Visualize a single neuron of a single channel.
 
     Defaults to the center neuron. When width and height are even numbers, we
@@ -171,8 +172,8 @@ def neuron(
     :type y: Optional[int], optional
     :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
     :type batch: Optional[int], optional
-    :return: Objective function to optimize input for a single position of a single channel
-    :rtype: Callable
+    :return: Objective to optimize input for a single position of a single channel
+    :rtype: Objective
     """
     
     @handle_batch(batch)
@@ -188,7 +189,7 @@ def channel(
     layer: str, 
     n_channel: int, 
     batch: Optional[int] = None,
-) -> Callable:
+) -> Objective:
     """Visualize a single channel
 
     :param layer: Name of the layer
@@ -197,8 +198,8 @@ def channel(
     :type n_channel: int
     :param batch: which position at the batch dim of the image tensor this objective is applied to, defaults to None
     :type batch: Optional[int], optional
-    :return: Objective function to optimize input for a single channel
-    :rtype: Callable
+    :return: Objective to optimize input for a single channel
+    :rtype: Objective
     """
     @handle_batch(batch)
     def inner(model):
@@ -212,7 +213,7 @@ def neuron_weight(
     x: Optional[int] = None, 
     y: Optional[int] = None, 
     batch: Optional[int] = None,
-) -> Callable:
+) -> Objective:
     """Linearly weighted channel activation at one location as objective
 
     :param layer: Name of the layer
@@ -225,8 +226,8 @@ def neuron_weight(
     :type y: Optional[int], optional
     :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
     :type batch: Optional[int], optional
-    :return: Objective function to optimize input for a linearly weighted channel activation at one location
-    :rtype: Callable
+    :return: Objective to optimize input for a linearly weighted channel activation at one location
+    :rtype: Objective
     """
     @handle_batch(batch)
     def inner(model):
@@ -243,7 +244,7 @@ def channel_weight(
     layer: str, 
     weight: torch.Tensor, 
     batch: Optional[int] = None,
-) -> Callable:
+) -> Objective:
     """ Linearly weighted channel activation as objective
     
     :param layer: Name of the layer
@@ -252,8 +253,8 @@ def channel_weight(
     :type weight: torch.Tensor
     :param batch: which position at the batch dim of the image tensor this objective is applied to, defaults to None
     :type batch: Optional[int], optional
-    :return: Objective function to optimize input for a linearly weighted channel activation
-    :rtype: Callable
+    :return: Objective to optimize input for a linearly weighted channel activation
+    :rtype: Objective
     """
     #TODO add option to normalize the weight vector and set default to True?
 
@@ -272,7 +273,7 @@ def localgroup_weight(
     wx: Optional[int] = 1, 
     wy: Optional[int] = 1, 
     batch: Optional[int] = None,
-) -> Callable:
+) -> Objective:
     """Linearly weighted channel activation around some spot as objective
 
     :param layer: Name of the layer
@@ -289,8 +290,8 @@ def localgroup_weight(
     :type wy: Optional[int], optional
     :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
     :type batch: Optional[int], optional
-    :return: Objective function to optimize 
-    :rtype: Callable
+    :return: Objective to optimize linearly weighted channel activation around some spot
+    :rtype: Objective
     """
     @handle_batch(batch)
     def inner(model):
@@ -308,7 +309,7 @@ def direction(
     layer: str, 
     direction: torch.Tensor, 
     batch: Optional[int] = None,
-) -> Callable:
+) -> Objective:
     """Visualize a direction in activation space.
 
     :param layer: Name of the layer
@@ -317,8 +318,8 @@ def direction(
     :type direction: torch.Tensor
     :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
     :type batch: Optional[int], optional
-    :return: Objection function to optimize input for a particular direction in activation space.
-    :rtype: Callable
+    :return: Objective to optimize input for a particular direction in activation space.
+    :rtype: Objective
     """
     #TODO add option to normalize the direction vector and set default to True?
     @handle_batch(batch)
@@ -336,7 +337,7 @@ def direction_neuron(
     x: Optional[int] = None,
     y: Optional[int] = None,
     batch: Optional[int] = None,
-) -> Callable:
+) -> Objective:
     """Visualize a single (x, y) position along the given direction
 
     Similar to the neuron objective, defaults to the center neuron.
@@ -351,8 +352,8 @@ def direction_neuron(
     :type y: Optional[int], optional
     :param batch: which position at the batch dimension of the image tensor this objective is applied to, defaults to None
     :type batch: Optional[int], optional
-    :return: Objective function to optimize input for a particular direction in activation space at a single position
-    :rtype: Callable
+    :return: Objective to optimize input for a particular direction in activation space at a single position
+    :rtype: Objective
     """
 
     @handle_batch(batch)
@@ -381,34 +382,47 @@ def _torch_blur(tensor, out_c=3):
 
 
 @wrap_objective()
-def blur_input_each_step():
+def blur_input_each_step() -> Objective:
     """Minimizing this objective is equivelant to blurring input each step.
     Optimizing (-k)*blur_input_each_step() is equivalant to:
     input <- (1-k)*input + k*blur(input)
     An operation that was used in early feature visualization work.
     See Nguyen, et al., 2015.
+
+    :return: Objective which optimizes input to be blurred.
+    :rtype: Objective
     """
-    def inner(T):
-        t_input = T("input")
+    def inner(model):
+        model_input = model("input")
         with torch.no_grad():
-            t_input_blurred = _torch_blur(t_input)
-        return -0.5*torch.sum((t_input - t_input_blurred)**2)
+            model_input_blurred = _torch_blur(model_input)
+        return -0.5*torch.sum((model_input - model_input_blurred)**2)
     return inner
 
 
 @wrap_objective()
-def channel_interpolate(layer1, n_channel1, layer2, n_channel2):
+def channel_interpolate(
+    layer1: str, 
+    n_channel1: int, 
+    layer2: str, 
+    n_channel2: int,
+) -> Objective:
     """Interpolate between layer1, n_channel1 and layer2, n_channel2.
     Optimize for a convex combination of layer1, n_channel1 and
     layer2, n_channel2, transitioning across the batch.
-    Args:
-        layer1: layer to optimize 100% at batch=0.
-        n_channel1: neuron index to optimize 100% at batch=0.
-        layer2: layer to optimize 100% at batch=N.
-        n_channel2: neuron index to optimize 100% at batch=N.
-    Returns:
-        Objective
+
+    :param layer1: layer to optimize 100% at batch=0.
+    :type layer1: str
+    :param n_channel1: neuron index to optimize 100% at batch=0.
+    :type n_channel1: int
+    :param layer2: layer to optimize 100% at batch=N.
+    :type layer2: str
+    :param n_channel2: neuron index to optimize 100% at batch=N.
+    :type n_channel2: int
+    :return: Objective to optimizes input towards the channel interpolation between the given channels
+    :rtype: Objective
     """
+    
     def inner(model):
         batch_n = list(model(layer1).shape)[0]
         arr1 = model(layer1)[:, n_channel1]
@@ -423,7 +437,10 @@ def channel_interpolate(layer1, n_channel1, layer2, n_channel2):
 
 
 @wrap_objective()
-def alignment(layer, decay_ratio=2):
+def alignment(
+    layer: str, 
+    decay_ratio: Optional[float] = 2,
+) -> Objective:
     """Encourage neighboring images to be similar.
     When visualizing the interpolation between two objectives, it's often
     desirable to encourage analogous objects to be drawn in the same position,
@@ -433,11 +450,13 @@ def alignment(layer, decay_ratio=2):
     In general, we find this most effective if used with a parameterization that
     shares across the batch. (In fact, that works quite well by itself, so this
     function may just be obsolete.)
-    Args:
-        layer: layer to penalize at.
-        decay_ratio: how much to decay penalty as images move apart in batch.
-    Returns:
-        Objective.
+
+    :param layer: layer to penalize at.
+    :type layer: str
+    :param decay_ratio: how much to decay penalty as images move apart in batch., defaults to 2
+    :type decay_ratio: Optional[float], optional
+    :return: Objective to optimize input towards alignment across batch dimension
+    :rtype: Objective
     """
     def inner(model):
         batch_n = list(model(layer).shape)[0]
@@ -451,9 +470,8 @@ def alignment(layer, decay_ratio=2):
         return accum
     return inner
 
-
 @wrap_objective()
-def diversity(layer):
+def diversity(layer: str) -> Objective:
     """Encourage diversity between each batch element.
 
     A neural net feature often responds to multiple things, but naive feature
@@ -465,11 +483,10 @@ def diversity(layer):
     very similar to ideas in style transfer, except we're *penalizing* style
     similarity instead of encouraging it.
 
-    Args:
-        layer: layer to evaluate activation correlations on.
-
-    Returns:
-        Objective.
+    :param layer: layer to evaluate activation correlations on.
+    :type layer: str
+    :return: Objective that encourages input towards diversity
+    :rtype: Objective
     """
     def inner(model):
         layer_t = model(layer)
