@@ -1,6 +1,6 @@
 .. image:: ../../images/lucent_header.jpg
   :width: 1280
-  :height: 400
+  :height: 350
   :alt: Lucent title image - Credit to Lim Swee Kiat
 
 
