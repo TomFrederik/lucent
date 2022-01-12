@@ -16,18 +16,23 @@ how to :ref:`installation` the project.
 
    This project is under active development.
 
-Contents
---------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :caption: Tutorials and Guides
+   
+   tutorials/installation
+   tutorials/first_steps
 
-   usage
-   api
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API Reference
+
    lucent.optvis
    lucent.interface
-
-
+   lucent.misc
+   lucent.modelzoo
 
 
 Indices and tables
