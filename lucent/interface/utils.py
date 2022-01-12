@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import os
 from typing import Optional, Dict, List
 
@@ -11,6 +12,7 @@ from lucent.modelzoo.util import get_model_layers
 from lucent.optvis import param
 from lucent.optvis.render import render_vis
 import lucent.optvis.objectives as objectives
+from lucent.interface.globals import TV_MODEL_LIST
 
 def display_image(
     model: Optional[torch.nn.Module] = None, 
@@ -119,11 +121,16 @@ def display_database(
         print('model is None!')
         return
     
-    expanders = dict()
-    for layer, layer_features in st.session_state.database.items():
+    expanders = OrderedDict()
+    for layer in st.session_state.layer_names:
+        print(f'layer = {layer}')
+        layer_features = st.session_state.database.get(layer, None)
+        if layer_features is None:
+            continue
         if given_layer is not None and layer != given_layer:
             continue
         expanders[layer] = st.expander(label=layer, expanded=True)
+        print(expanders.keys())
         image_list = list(layer_features.values()) # TODO make sure they are sorted according to their names
         with expanders[layer]:
             st.image(image_list)   
@@ -190,3 +197,7 @@ def generate_batch_images(
     for layer, channel, image in zip(layers, channels, images):
         add_to_db[layer][str(channel)] = image
     st.session_state.database = st.session_state.database | add_to_db
+
+
+def create_model_list():
+    return [None] + TV_MODEL_LIST + ['Other (specify below)']

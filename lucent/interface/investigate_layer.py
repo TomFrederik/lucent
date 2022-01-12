@@ -8,11 +8,22 @@ from PIL import Image
 import streamlit as st
 import torch
 
-from lucent.interface.utils import update_image_db, display_image, init, display_database, generate_layer_features
+from lucent.interface.utils import update_image_db, display_image, init, display_database, generate_layer_features, create_model_list
 
 
-def update_identifier():
+def layer_change():
     st.session_state.identifier = st.session_state.layer
+    update_display()
+
+def update_display():
+    print('Updating display..')
+    if st.session_state.display == 'Layer':
+        display_database(st.session_state.layer)
+    elif st.session_state.display == 'Database':
+        display_database()
+
+
+st.set_page_config(layout="wide")
 
 
 if 'layer_names' not in st.session_state:
@@ -40,47 +51,7 @@ with st.sidebar:
         
         st.selectbox(
             'Model', 
-            options=[
-                None,
-                'resnet18',
-                'alexnet',
-                'squeezenet1_0',
-                'vgg16',
-                'densenet161',
-                'inception_v3',
-                'googlenet',
-                'shufflenet_v2_x1_0',
-                'mobilenet_v2',
-                'mobilenet_v3_small',
-                'mobilenet_v3_large',
-                'resnext50_32x4d',
-                'wide_resnet50_2',
-                'mnasnet1_0',
-                'efficientnet_b0',
-                'efficientnet_b1',
-                'efficientnet_b2',
-                'efficientnet_b3',
-                'efficientnet_b4',
-                'efficientnet_b5',
-                'efficientnet_b6',
-                'efficientnet_b6',
-                'efficientnet_b7',
-                'regnet_y_400mf',
-                'regnet_y_800mf',
-                'regnet_y_1_6gf',
-                'regnet_y_3_2gf',
-                'regnet_y_8gf',
-                'regnet_y_16gf',
-                'regnet_y_32gf',
-                'regnet_x_400mf',
-                'regnet_x_800mf',
-                'regnet_x_1_6gf',
-                'regnet_x_3_2gf',
-                'regnet_x_8gf',
-                'regnet_x_16gf',
-                'regnet_x_32gf',
-                'Other (specify below)',
-            ],
+            options=create_model_list(),
             key='model_name',
             index=0,
         )
@@ -96,14 +67,17 @@ with st.sidebar:
             st.write('Config saved!')
 
     # this should have a disabled keyword but somehow doesn't yet --> maybe code on github needs to be pushed to package manager first
-    st.checkbox("Save images to data dir (won't work if loading images)", value=False, key='save_data') 
+    st.checkbox("Save images to data dir", value=False, key='save_data') 
 
-    st.selectbox('layer', options=st.session_state.layer_names, key='layer', on_change=update_identifier, index=0)
+    st.selectbox('layer', options=st.session_state.layer_names, key='layer', on_change=layer_change, index=0)
     st.button('Generate Layer Features', on_click=generate_layer_features, args=(st.session_state.model, st.session_state.layer))
-    st.button('Display Database', on_click=display_database)
-    st.button('Display Layer', on_click=display_database, kwargs=dict(given_layer=st.session_state.layer))
+    st.select_slider('Display ', options=['Layer', 'Database'], value='Layer', key='display', on_change=update_display)
 
 
 
 if st.session_state.load_data:
+    print('\nloading data from database...\n')
     update_image_db(st.session_state.datadir, st.session_state.model_name)
+
+
+# display_database(st.session_state.layer)

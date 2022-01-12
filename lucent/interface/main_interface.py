@@ -8,7 +8,7 @@ from PIL import Image
 import streamlit as st
 import torch
 
-from lucent.interface.utils import join_layer_channel, update_image_db, display_image, init
+from lucent.interface.utils import join_layer_channel, update_image_db, display_image, init, create_model_list
 
 
 def update_identifier():
@@ -24,47 +24,7 @@ with st.sidebar:
         
         st.selectbox(
             'Model', 
-            options=[
-                None,
-                'resnet18',
-                'alexnet',
-                'squeezenet1_0',
-                'vgg16',
-                'densenet161',
-                'inception_v3',
-                'googlenet',
-                'shufflenet_v2_x1_0',
-                'mobilenet_v2',
-                'mobilenet_v3_small',
-                'mobilenet_v3_large',
-                'resnext50_32x4d',
-                'wide_resnet50_2',
-                'mnasnet1_0',
-                'efficientnet_b0',
-                'efficientnet_b1',
-                'efficientnet_b2',
-                'efficientnet_b3',
-                'efficientnet_b4',
-                'efficientnet_b5',
-                'efficientnet_b6',
-                'efficientnet_b6',
-                'efficientnet_b7',
-                'regnet_y_400mf',
-                'regnet_y_800mf',
-                'regnet_y_1_6gf',
-                'regnet_y_3_2gf',
-                'regnet_y_8gf',
-                'regnet_y_16gf',
-                'regnet_y_32gf',
-                'regnet_x_400mf',
-                'regnet_x_800mf',
-                'regnet_x_1_6gf',
-                'regnet_x_3_2gf',
-                'regnet_x_8gf',
-                'regnet_x_16gf',
-                'regnet_x_32gf',
-                'Other (specify below)',
-            ],
+            options=create_model_list(),
             key='model_name',
             index=0,
         )
