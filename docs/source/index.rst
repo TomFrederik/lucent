@@ -1,7 +1,7 @@
-.. image:: path/filename.png
+.. image:: images/lucent_header.jpg
   :width: 1280
   :height: 530
-  :alt: Alternative text
+  :alt: Lucent title image - Credit to Lim Swee Kiat
 
 
 Welcome to Lucent's documentation!
