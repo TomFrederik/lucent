@@ -9,6 +9,10 @@ Welcome to Lucent's documentation!
 
 **Lucent** is a Python library dedicated to furthering mechanistic interpretability
 research efforts.
+
+The original `Lucid <https://github.com/tensorflow/lucid>`_ was developed by Chris Olah, Ludwig Schubert and many others. It was initially adapted to PyTorch by Lim Swee Kiat. 
+Documentation and further development by Tom Lieberum.
+
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
 

@@ -7,7 +7,7 @@ The lucent.optvis package is where all the actual feature visualization magic ha
 Here we contain objective functions, image parameterizations and util methods.
 
 If you want to write your own objective, you can do so by using the wrap_objective decorator and copy the behavior of the existing objective functions.
-For a more detailed explanation, see `_custom_objectives`_.
+For a more detailed explanation, see :ref:`custom_objectives`.
 
 
 Subpackages
