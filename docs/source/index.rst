@@ -1,3 +1,9 @@
+.. image:: path/filename.png
+  :width: 1280
+  :height: 530
+  :alt: Alternative text
+
+
 Welcome to Lucent's documentation!
 ===================================
 
