@@ -234,7 +234,12 @@ Let's say you want to generate many visualizations at once, either for different
 
 The way Lucent handles this is a bit unintuitive at the beginning.
 
-We begin by specifying that our image parameterization should have a batch dimension:
+In essence, you can specify for each objective function which batch dimension it should pay attention to. By default, an objective is applied 
+to the full batch of images, but you can also pass a ``batch`` parameter to specify which element of the batch it should be applied to.
+(Anything in between one element and all elements is not support at the moment.)
+
+So.. what does this mean for our parameterization function? We have to make sure that the returned images also have a batch dimension. If you 
+are using the built-in parameterizations, you can simply pass this as an additional parameter:
 
 .. code-block:: python
 
