@@ -139,42 +139,44 @@ def display_database(
 def generate_layer_features(
     model: torch.nn.Module,
     layer: str,
+    batch_size: Optional[int] = 5,
 ) -> None:
 
     # build identifiers
-    identifiers = [join_layer_channel(layer, str(name)) for name in range(5)] # TODO
-    # TODO: deal with batch size
-    
-    # generate images
-    generate_batch_images(model, identifiers)
+    max_num_names = 5 #TODO detect this automatically 
+    batched_identifiers = [
+        [join_layer_channel(layer, str(name)) for name in range(batch * batch_size, max(max_num_names, (batch + 1) * batch_size))] 
+        for batch in range(max_num_names // batch_size + 1)
+    ]
 
+    # generate images for each batch
+    for identifiers in batched_identifiers:
+        # only generate images that are not already in database
+        to_remove = []
+        for ident in identifiers:
+            if check_database(ident) is not None:
+                to_remove.append(ident)
+
+        for ident in to_remove:
+            identifiers.remove(ident)
+
+        if len(identifiers) == 0:
+            continue
+
+        # generate images
+        generate_batch_images(model, identifiers)
 
 def generate_batch_images(
     model: torch.nn.Module, 
     identifiers: List[str],
 ) -> None:
-    # only generate images that are not already in database
-    to_remove = []
-    if st.session_state.load_data:
-        for ident in identifiers:
-            if check_database(ident) is not None:
-                to_remove.append(ident)
-        for ident in to_remove:
-            identifiers.remove(ident)
-    
-    if len(identifiers) == 0:
-        return None
     
     # set up parameterization for batch optimization
-    batch_size = len(identifiers)
-    print(identifiers)
-    # param_f = lambda: param.image(128, batch=batch_size)
-    param_f = lambda: param.image(128, batch=batch_size)
-
+    param_f = lambda: param.image(128, batch=len(identifiers))
     channels = list(map(lambda x: int(x[1]), map(split_identifier, identifiers)))
     layers = list(map(lambda x: x[0], map(split_identifier, identifiers)))
 
-    # objective = Objective.sum(channel(*split_identifier(ident), batch=i) for i, ident in enumerate(identifiers))
+    # set up objective for batch optimization
     objective = objectives.Objective.sum([objectives.channel(layer, channel, batch=i) for i, (layer, channel) in enumerate(zip(layers, channels))])
     images = render_vis(
         model, 
