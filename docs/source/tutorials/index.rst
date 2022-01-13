@@ -8,4 +8,7 @@ Tutorials and Guides
 
     installation
     first_steps
+    native_objectives
     custom_objectives
+    parameterizations
+    transformations
