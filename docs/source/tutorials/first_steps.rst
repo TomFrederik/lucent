@@ -92,21 +92,23 @@ Now that we have our model we will start of with the bread and butter of mechani
 
 The core idea is to optimize the input image to the network such that a certain neuron or channel gets maximally excited. 
 
-How would that help with understanding what network is doing? How could that give us misleading results? Think about it for a minute if it isn't immediately obvious.
+.. note:: Question
 
-.. raw:: html
+   How would that help with understanding what network is doing? How could that give us misleading results?
 
-   <details>
-   <summary><a>Answer</a></summary>
+   .. raw:: html
 
-Optimizing the input to maximally excite a neuron produces a sort of super-stimulus. It establishes one direction of causality, i.e. ... #TODO
+      <details>
+      <summary><a>Answer</a></summary>
 
-However, this method usually produces images that are very different from the data distribution. We might be worried that it picks up on 
-spurious correlations instead of reflecting what the neuron does when it encounters real images.
+   Optimizing the input to maximally excite a neuron produces a sort of super-stimulus. It establishes one direction of causality, i.e. ... #TODO
 
-.. raw:: html
+   However, this method usually produces images that are very different from the data distribution. We might be worried that it picks up on 
+   spurious correlations instead of reflecting what the neuron does when it encounters real images.
 
-   </details>
+   .. raw:: html
+
+      </details>
 
 
 In order to perform feature visualization we have to specify an objective function with respect to which we will optimize the input image.
