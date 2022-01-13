@@ -102,7 +102,7 @@ def get_model_layers(
     getLayerRepr: Optional[bool] = False,
     excludeNorms: Optional[bool] = True,
     excludeActs: Optional[bool] = True,
-    excludePools: Optional[bool] = True
+    excludePools: Optional[bool] = True,
 ) -> Union[List[str], OrderedDict[str, str]]:
     """Get the names of all layers of a network. The names are given in the format that can be used
        to access them via objectives.
@@ -147,9 +147,9 @@ def get_model_layers(
                     and not (any(isinstance(layer, pool) for pool in POOLINGS) and excludePools) # exclude poolings
                 ):
                     if getLayerRepr:
-                        layers["_".join(prefix+[name])] = layer.__repr__()
+                        layers["->".join(prefix+[name])] = layer.__repr__()
                     else:
-                        layers.append("_".join(prefix + [name]))
+                        layers.append("->".join(prefix + [name]))
                 
                 # recurse
                 recursive_get_names(layer, prefix=prefix + [name])
