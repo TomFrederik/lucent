@@ -108,9 +108,20 @@ def init(model_name):
         
     model.to(device).eval()
 
-    st.session_state.layer_names = get_model_layers(model)
+    st.session_state.layer_names, st.session_state.dependence_graph = get_model_layers(model)
+    st.session_state.dep_graph_depth = get_max_depth(st.session_state.dependence_graph)
+
+    # only display to given nesting depth
+    #TODO
 
     return model
+
+def get_max_depth(dependence_graph: OrderedDict):
+    if not dependence_graph:
+        return 0
+    else:
+        return 1 + max(get_max_depth(subgraph) for subgraph in dependence_graph.items())
+
 
 def display_database(
     given_layer: Optional[str] = None,
@@ -123,15 +134,13 @@ def display_database(
     
     expanders = OrderedDict()
     for layer in st.session_state.layer_names:
-        print(f'layer = {layer}')
         layer_features = st.session_state.database.get(layer, None)
         if layer_features is None:
             continue
         if given_layer is not None and layer != given_layer:
             continue
         expanders[layer] = st.expander(label=layer, expanded=True)
-        print(expanders.keys())
-        image_list = list(layer_features.values()) # TODO make sure they are sorted according to their names
+        image_list = list(layer_features.values())
         with expanders[layer]:
             st.image(image_list)   
 

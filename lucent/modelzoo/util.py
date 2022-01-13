@@ -100,6 +100,7 @@ POOLINGS = [
 def get_model_layers(
     model: nn.Module, 
     getLayerRepr: Optional[bool] = False,
+    dependencies: Optional[bool] = True,
     excludeNorms: Optional[bool] = True,
     excludeActs: Optional[bool] = True,
     excludePools: Optional[bool] = True,
@@ -111,6 +112,8 @@ def get_model_layers(
     :type model: torch.nn.Module
     :param getLayerRepr: whether to return a OrderedDict of layer names, layer representation string pair. If False just return a list of names.
     :type getLayerRepr: Optional[bool], optional
+    :param dependencies: Whether to return dependencies of layers as a nested OrderedDict
+    :rtype dependencies: Optional[bool], optional
     :param excludeNorms: whether to exclude normalization layers, defaults to True
     :type excludeNorms: Optional[bool], optional
     :param excludeActs: whether to exclude Activation layers, defaults to True
@@ -129,8 +132,12 @@ def get_model_layers(
         raise ValueError(f"model should have type torch.nn.Module but has type {type(model)}")
 
     layers = OrderedDict() if getLayerRepr else []
+    dependence_graph = OrderedDict() if dependencies else None
+
     # recursive function to get names
-    def recursive_get_names(net, prefix=[]):
+    def recursive_get_names(net, prefix=None):
+        if prefix is None:
+            prefix = []
         if hasattr(net, "_modules"):
             for name, layer in net._modules.items():
                 if layer is None:
@@ -150,7 +157,16 @@ def get_model_layers(
                         layers["->".join(prefix+[name])] = layer.__repr__()
                     else:
                         layers.append("->".join(prefix + [name]))
-                
+
+                    if dependence_graph is not None:
+                        dependence_graph = add_to_dependence_graph(dependence_graph, prefix, name)
+                elif ( #TODO make this prettier, e.g. splitting the if statement above already
+                    isinstance(layer, nn.Sequential)
+                    or isinstance(layer, nn.ModuleDict)
+                    or isinstance(layer, nn.ModuleList)
+                ):
+                    dependence_graph = add_to_dependence_graph(dependence_graph, prefix, name)
+
                 # recurse
                 recursive_get_names(layer, prefix=prefix + [name])
         else:   
@@ -158,4 +174,16 @@ def get_model_layers(
     
     recursive_get_names(model)
     
-    return layers
+    return layers, dependence_graph
+
+def add_to_dependence_graph(dependence_graph, prefix, name):
+    if len(prefix) == 0:
+        if name in dependence_graph:
+            raise ValueError(f'Duplicate module detected: {name = }, {prefix = }')
+        dependence_graph[name] = OrderedDict()
+    else:
+        cur_dict = dependence_graph
+        for idx in prefix:
+            cur_dict = cur_dict[idx]
+        cur_dict[name] = OrderedDict()
+    return dependence_graph

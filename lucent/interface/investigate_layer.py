@@ -22,12 +22,21 @@ def update_display():
     elif st.session_state.display == 'Database':
         display_database()
 
+def changed_nesting_depth():
+    pass #TODO
+
 
 st.set_page_config(layout="wide")
 
 
 if 'layer_names' not in st.session_state:
         st.session_state['layer_names'] = []
+
+if 'dependence_graph' not in st.session_state:
+        st.session_state['dependence_graph'] = []
+
+if 'dep_graph_depth' not in st.session_state:
+    st.session_state['dep_graph_depth'] = 1
 
 # init and update data base of features
 if 'database' not in st.session_state:
@@ -70,6 +79,8 @@ with st.sidebar:
     st.checkbox("Save images to data dir", value=False, key='save_data') 
 
     st.selectbox('layer', options=st.session_state.layer_names, key='layer', on_change=layer_change, index=0)
+    #TODO apparently slider has to have min != max value -> only enable slider when more than one depth?
+    st.slider('Nesting Depth', min_value=1, max_value=st.session_state.dep_graph_depth+1, value=1, step=1, key='nesting_depth', on_change=changed_nesting_depth)
     st.button('Generate Layer Features', on_click=generate_layer_features, args=(st.session_state.model, st.session_state.layer))
     st.select_slider('Display ', options=['Layer', 'Database'], value='Layer', key='display', on_change=update_display)
 
