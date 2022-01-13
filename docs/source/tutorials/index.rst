@@ -3,4 +3,9 @@
 Tutorials and Guides
 ====================
 
-WIP
+
+.. toctree::
+
+    installation
+    first_steps
+    custom_objectives
