@@ -76,11 +76,16 @@ Let's import torch and lucent, and set the device variable.
 
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
 
+
+.. admonition::
+
+   Please note that visualization can be painfully slow if you are not using a GPU. 
+   Colab provides (limited) access to free GPUs, so check them out if you do not have a GPU yourself.
+
+
 We will now load the InceptionV1 model (also known as GoogLeNet), but you could also use any other image-based network here.
 We will send it to the device and set it to eval mode to avoid gradient tracking and unnecessary computations and disable any potential dropouts.
 
-Please note that visualization can be painfully slow if you are not using a GPU. 
-Colab provides (limited) access to free GPUs, so check them out if you do not have a GPU yourself.
 
 .. code-block:: python
 
