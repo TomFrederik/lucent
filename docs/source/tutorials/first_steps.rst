@@ -17,9 +17,10 @@ First steps in Lucent
 Graphical interface vs. script 
 ==============================
 
-Lucent can be interacted with either indirectly via the graphical interface or directly via a python script by calling the appropriate lucent.optvis methods.
+Lucent can be interacted with either indirectly via the graphical interface or directly via a python script by calling the appropriate ``lucent.optvis`` methods.
 
-When you are just starting out with interpretability we recommend having a look at the graphical interface first and then transitioning to optvis later if you want to change some of the default settings, add your own custom objective function or what have you.
+When you are just starting out with interpretability we recommend having a look at the graphical interface first and then transitioning to ``optvis``
+later if you want to change some of the default settings, add your own custom objective function or what have you.
 
 
 Graphical Interface
@@ -27,7 +28,8 @@ Graphical Interface
 
 The graphical interface is still WIP, but you can check it out by running
 
-.. parsed-literal::
+.. code-block:: console
+
     cd $LUCENT_PATH/lucent/interface
     streamlit run investigate_layer.py
 
@@ -39,14 +41,16 @@ This should then open a tab in your browser looking like this
   :alt: investigate_layer_startup
 
 You can now select a model of your choice, either from the torchvision modelzoo or upload your own model. 
-If you wish to load from an old session, you can specify the data directory and tick the 'Load images from data dir' checkbox.
+If you wish to load from an old session, you can specify the data directory and tick the ``Load images from data dir`` checkbox.
 
-Click 'Save Config'. Lucent should automatically detect all relevant layers for you and list them in the layer drop menu.
-Now you can generate the features for each layer by selecting the layer and clicking 'Generate Layer Features'.
+Click ``Save config``. Lucent should automatically detect all relevant layers for you and list them in the layer drop menu.
+Now you can generate the features for each layer by selecting the layer and clicking ``Generate Layer Features``.
 
-If you select 'Display Database', all of the loaded and generated images for the selected model will be displayed.
+If you select ``Display Database``, all of the loaded and generated images for the selected model will be displayed.
 
-Lucent comes with a couple of predefined interfaces geared towards investigating different phenomena. You can check them out under the folder interface.
+Lucent comes with a couple of predefined interfaces geared towards investigating different phenomena. You can check them out in the folder interface.
+..
+    TODO: add link to interface folder
 
 
 Lucent via Script
@@ -63,7 +67,7 @@ If you are running the code in a colab, we first need to install lucent:
 
     !pip install --quiet git+https://github.com/TomFrederik/lucent.git
 
-Now, let's import torch and lucent, and set the device variable. 
+Let's import torch and lucent, and set the device variable. 
 
 .. code-block:: python
 
@@ -75,7 +79,8 @@ Now, let's import torch and lucent, and set the device variable.
 We will now load the InceptionV1 model (also known as GoogLeNet), but you could also use any other image-based network here.
 We will send it to the device and set it to eval mode to avoid gradient tracking and unnecessary computations and disable any potential dropouts.
 
-Please note that visualization can be painfully slow if you are not using a GPU. Colab provides (limited) access to free GPUs so check them out if you do not have a GPU yourself.
+Please note that visualization can be painfully slow if you are not using a GPU. 
+Colab provides (limited) access to free GPUs, so check them out if you do not have a GPU yourself.
 
 .. code-block:: python
 
@@ -92,7 +97,7 @@ Now that we have our model we will start of with the bread and butter of mechani
 
 The core idea is to optimize the input image to the network such that a certain neuron or channel gets maximally excited. 
 
-.. note:: Question
+.. admonition:: Question
 
    How would that help with understanding what network is doing? How could that give us misleading results?
 
@@ -151,23 +156,24 @@ You can also explicitly state the objective, instead of providing an identifying
     obj = objectives.channel('mixed4a', 476)
     list_of_images = render.render_vis(model, obj)
 
-There are a few predefined objective functions, such as ``channel``, ``neuron`` and ``direction``. You can also define
-your own objective, which we will explain in :ref:`custom_objectives`. 
+There are a few predefined objective functions, such as ``channel``, ``neuron`` and ``direction``. Learn more about them in :ref:`Native Objectives`. 
+You can also define your own objective, which we will explain in :ref:`custom_objectives`. 
 
 In principle, the objective can be any differentiable function that takes as input the feature map of the entire model
 and returns some loss value. For example, by using the ``channel`` objective, we specify that we want to minimize the 
-negative, mean activation of a particular layer's activation and a particular channel.
+negative, mean activation of a particular layer's activation at a particular channel.
 
-Objectives can be combined in various ways. They support all the standard arithmetic operators (+, -, *, /).
+Objectives can be combined via all the standard arithmetic operators (+, -, *, /).
 
 For example, we could jointly optimize two channels to see the interaction of two neurons:
 
 .. code-block:: python
+
     obj = objectives.channel(476) + objectives.channel(465)
     list_of_images = render.render_vis(model, obj)
 
 
-.. note:: Summation
+.. admonition:: Summation
 
     If you want to use the ``sum`` operator, the built-in python method results in an unfortunate nested description. To circumvent
     this, you can use the classmethod ``Objectives.sum(iterable_of_objectives)`` instead.
@@ -176,6 +182,36 @@ For example, we could jointly optimize two channels to see the interaction of tw
 Parameterizations
 -----------------
 
+We said above that feature visualization is all about optimizing the input image for a given objective function. But in order to that
+via the typical autodiff machinery, we need to *parameterize* the image somehow. This way we can then optimize the parameters of that image.
+
+.. admonition:: Question
+
+   Can you come up with at least *two* ways of parameterizing an image?
+
+   .. raw:: html
+
+      <details>
+      <summary><a>Answer</a></summary>
+
+   The first approach is to simply use an RGB parameterization. That is, for every pixel in the image, we store three float values between
+   0 and 1 representing the R-, G-, and B-value respectively.
+
+   The second approach is to switch to a fourier representation of the image. The parameters are then the coefficients of the different
+   fourier basis functions. This approach does actually produce nicer representations than the RGB parameterization which tends to have 
+   certain grainy, high-frequency patterns.
+
+   There are more possible approaches. You can find out about them on the :ref:`parameterizations` page.
+
+   .. raw:: html
+
+      </details>
+
+In order to tell ``render_vis`` our parameterization we can use the ``param_f`` keyword. ``param_f`` should be a function without arguments
+that returns the image tensor.
+
+.. code-block:: python
+    #TODO
 
 
 Batching
