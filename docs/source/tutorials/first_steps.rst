@@ -60,10 +60,13 @@ If you are running the code in a colab, we first need to install lucent:
     TODO: make sure this actually works on colab
 
 .. code-block:: python
+
     !pip install --quiet git+https://github.com/TomFrederik/lucent.git
 
 Now, let's import torch and lucent, and set the device variable. 
+
 .. code-block:: python
+
     import torch
     from lucent.optvis import render, param, transform, objectives
 
@@ -75,6 +78,7 @@ We will send it to the device and set it to eval mode to avoid unnecessary compu
 Please note that visualization can be painfully slow if you are not using a GPU. Colab provides (limited) access to free GPUs so check them out if you do not have a GPU yourself.
 
 .. code-block:: python
+
     from torchvision.models import inceptionv1
     model = inceptionv1(pretrained=True)
     _ = model.to(device).eval() # the underscore prevents printing the model if it's the last line in a ipynb cell
@@ -90,6 +94,7 @@ The core idea is to optimize the input image to the network such that a certain 
 How would that help with understanding what network is doing? How could that give us misleading results? Think about it for a minute if it isn't immediately obvious.
 
 .. raw:: html
+
    <details>
    <summary><a>Answer</a></summary>
 
@@ -98,6 +103,7 @@ However, this method usually produces images that are very different from the da
 spurious correlations instead of reflecting what the neuron does when it encounters real images.
 
 .. raw:: html
+
    </details>
 
 In order to perform feature visualization we have to specify an objective function with respect to which we will optimize the input image.
@@ -107,13 +113,16 @@ The default of render.render_vis is to assume you gave it a description of the f
 For example,
 
 .. code-block:: python
+
     list_of_images = render.render_vis(model, "mixed4a:476") # list of images has one element in this case
 
 Now, what if you don't know the names of all the layers in your network? Lucent has you covered, with its get_model_layers method
 
+
 .. code-block:: python
+
     from lucent.modelzoo.util import get_model_layers
-    
+
     layer_names, dependency_graph = get_model_layers(model)
 
 
