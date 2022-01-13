@@ -29,6 +29,7 @@ how to :ref:`install <installation>` the project.
    tutorials/first_steps
    tutorials/native_objectives
    tutorials/parameterizations
+   tutorials/transformations
    tutorials/custom_objectives
 
 
