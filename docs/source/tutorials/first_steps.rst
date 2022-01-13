@@ -210,8 +210,21 @@ via the typical autodiff machinery, we need to *parameterize* the image somehow.
 In order to tell ``render_vis`` our parameterization we can use the ``param_f`` keyword. ``param_f`` should be a function without arguments
 that returns the image tensor.
 
+
+The canonical way to do this in Lucent is to call ``lucent.param.image``:
+
 .. code-block:: python
-    #TODO
+   
+   # the first parameter determines the image width -> influences runtime significantly
+   param_f = lambda: param.image(w=128, fft=False, decorrelate=False) # this is vanilla RGB-parameterization
+   fft_param_f = lambda: param.image(w=128, fft=True, decorrelate=False) # using Fourier basis instead of pixel values
+   fft_decor_param_f = lambda: param.image(w=128, fft=True, decorrelate=True) # this is the default setting
+   
+   # Let's see what the difference in output is:
+   images = []
+   for f in [param_f, fft_param_f, fft_decor_param_f]:
+       images.append(render.render_vis(model, 'mixed4a:476', param_f=f))
+   
 
 
 Batching
@@ -226,10 +239,11 @@ We begin by specifying that our image parameterization should have a batch dimen
 .. code-block:: python
 
     batch_size = 3
-    param_f = lambda: param.image(128, batch=batch_size)
+    param_f = lambda: param.image(w=128, batch=batch_size)
 
-Now, let's say we want to optimize three different channels, 476, 477, and 478 of the layer ``mixed4a``. We do this by creating the *sum* of
-the individual objectives and setting the ``batch`` keyword argument to a different value in [0,1,2] for each of them:
+Now, let's say we want to optimize three different channels, ``476``, ``477``, and ``478`` of the layer ``mixed4a``. We do this by creating the *sum* of
+the individual objectives and setting the ``batch`` keyword argument to a different value in [0,1,2] for each of them. This way, each objective will only
+be applied to the i-th image, and we can optimize them in parallel.
 
 .. code-block:: python
 
