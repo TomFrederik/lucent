@@ -259,5 +259,40 @@ be applied to the i-th image, and we can optimize them in parallel.
 
     objective = Objectives.sum(objectives.channel('mixed4a', ch, batch=i) for i, ch in enumerate([476, 477, 478]))
     list_of_images = render.render_vis(model, objective) # list_of_images has length 3
+    
+    
+Transformations
+---------------
+
+Next to parameterizing the image via the frequency domain, another trick to reduce high-frequency patterns in the visualization is to impose robustness of the result
+under certain transformations that are applied to the input.
+
+Those transformations could be paddings, small translations (jitter), rescaling and rotating, just to name a few.
+
+The default setting for ``render_vis`` is given by
+
+.. code-block:: python
+   
+   standard_transforms = [
+       pad(12, mode="constant", constant_value=0.5),
+       jitter(8),
+       random_scale([1 + (i - 5) / 50.0 for i in range(11)]),
+       random_rotate(list(range(-10, 11)) + 5 * [0]),
+       jitter(4),
+   ]
+   
+So, actually we already used transformations in all of our examples above. Let's see what our go-to example looks like *without* it by passing an empty iterable:
+
+.. code-block:: python
+   
+   list_of_images = render.render_vis(model, 'mixed4a:476', transforms=[]) 
+
+
+In addition to the transformations above, each image is by default normalized. If you want to override this normalization you can provide a custom ``preprocess_f`` to ``render_vis`` or completely disable it with ``preprocess=False``.
+
+For a full ist of available transformations see :ref:`transformations`.
+
+
+
 
 
