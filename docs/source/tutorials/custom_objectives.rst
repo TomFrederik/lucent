@@ -1,7 +1,10 @@
 .. _custom_objectives:
 
+=================
 Custom Objectives
 =================
+
+.. contents:: Table of Contents
 
 
 How do you write your own objective function to optimize?
