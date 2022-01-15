@@ -24,7 +24,7 @@ In principle, any possible differentiable objective function could be used to co
 For the full documentation see :doc:`` TODO
 
 
-THe ``@wrap_objective()`` wrapper
+The ``@wrap_objective()`` wrapper
 =================================
 
 ....
