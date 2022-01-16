@@ -17,11 +17,19 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Optional
+from typing import Optional, Any
 
 import torch
 
-def _make_arg_str(arg):
+
+def _make_arg_str(arg: Any) -> str:
+    """Helper function to convert arg to str.
+
+    :param arg: argument
+    :type arg: Any
+    :return: arg converted to str
+    :rtype: str
+    """
     arg = str(arg)
     too_big = len(arg) > 15 or "\n" in arg
     return "..." if too_big else arg

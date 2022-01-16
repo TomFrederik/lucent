@@ -16,19 +16,44 @@
 from __future__ import absolute_import, division, print_function
 
 from collections import OrderedDict
-import torch
+from typing import Optional, Tuple, Callable, Iterator
+
 import numpy as np
+import torch
 
 
+# TODO have no idea why this is being used.
 class CompositeActivation(torch.nn.Module):
-
     def forward(self, x):
         x = torch.atan(x)
         return torch.cat([x/0.67, (x*x)/0.6], 1)
 
 
-def cppn(size, num_output_channels=3, num_hidden_channels=24, num_layers=8,
-         activation_fn=CompositeActivation, normalize=False):
+def cppn(
+    size: int, 
+    num_output_channels: Optional[int] = 3, 
+    num_hidden_channels: Optional[int] = 24, 
+    num_layers: Optionall[int] = 8,
+    activation_fn: Optional[torch.nn.Module] = CompositeActivation, 
+    normalize: Optional[bool] = False
+) -> Tuple[Iterator, Callable]:
+    """Creates cppn parameterization.
+
+    :param size: image size
+    :type size: int
+    :param num_output_channels: number of output channels, defaults to 3
+    :type num_output_channels: Optional[int], optional
+    :param num_hidden_channels: number of hidden channels, defaults to 24
+    :type num_hidden_channels: Optional[int], optional
+    :param num_layers: number of layers, defaults to 8
+    :type num_layers: Optionall[int], optional
+    :param activation_fn: activation function after hidden layers, defaults to CompositeActivation
+    :type activation_fn: Optional[torch.nn.Module], optional
+    :param normalize: Whether to use instance normalization after each hidden layer, defaults to False
+    :type normalize: Optional[bool], optional
+    :return: Iterator over network parameters and a function that returns the network's output on the grid [-sqrt(3), sqrt(3)] with step size ``size``.
+    :rtype: Tuple[Iterator, Callable]
+    """
 
     r = 3 ** 0.5
 

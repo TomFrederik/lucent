@@ -15,23 +15,51 @@
 
 from __future__ import absolute_import, division, print_function
 
-import torch
+from typing import Union, List, Tuple, Optional, Callable
+
 import numpy as np
+import torch
 
-
+# TODO pass this as an argument to avoid mixing devices 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 TORCH_VERSION = torch.__version__
 
 
-def pixel_image(shape, sd=None):
-    sd = sd or 0.01
+def pixel_image(
+    shape: Union[List, Tuple, torch.Size], 
+    sd: Optional[float] = 0.01,
+) -> Tuple[List[torch.Tensor], Callable]:
+    """Pixel parameterization of an image with given shape. 
+    
+    Init via zero-mean normal distribution with given standard deviation.
+
+    :param shape: Shape of image
+    :type shape: Union[List, Tuple, torch.Size]
+    :param sd: Standard deviation of initializing distribution, defaults to 0.01
+    :type sd: Optional[float], optional
+    :return: one-element list containing image parameters and image function returning the image on call.
+    :rtype: Tuple[List[torch.Tensor], Callable]
+    """
     tensor = (torch.randn(*shape) * sd).to(device).requires_grad_(True)
     return [tensor], lambda: tensor
 
 
-# From https://github.com/tensorflow/lucid/blob/master/lucid/optvis/param/spatial.py
-def rfft2d_freqs(h, w):
-    """Computes 2D spectrum frequencies."""
+
+def rfft2d_freqs(
+    h: int, 
+    w: int,
+) -> np.ndarray:
+    """Computes 2D spectrum frequencies of an image with given dimensions.
+
+    From https://github.com/tensorflow/lucid/blob/master/lucid/optvis/param/spatial.py .
+
+    :param h: image height
+    :type h: int
+    :param w: image width
+    :type w: int
+    :return: 2D spectrum frequencies
+    :rtype: np.ndarray
+    """
     fy = np.fft.fftfreq(h)[:, None]
     # when we have an odd input dimension we need to keep one additional
     # frequency and later cut off 1 pixel
@@ -42,11 +70,25 @@ def rfft2d_freqs(h, w):
     return np.sqrt(fx * fx + fy * fy)
 
 
-def fft_image(shape, sd=None, decay_power=1):
+def fft_image(
+    shape: Union[List, Tuple, torch.Size], 
+    sd: Optional[float] = 0.01, 
+    decay_power: Optional[int] = 1,
+) -> Tuple[List[Tensor], Callable]:
+    """Image parameterization via fft spectrum
+
+    :param shape: Image shape
+    :type shape: Union[List, Tuple, torch.Size]
+    :param sd: Standard deviation for initializing distribution, defaults to 0.01
+    :type sd: Optional[float], optional
+    :param decay_power: Decay power to dampen scaling, defaults to 1
+    :type decay_power: Optional[int], optional
+    :return: One-element list containing image parameters and image function returning the image on call.
+    :rtype: Tuple[List[Tensor], Callable]
+    """
     batch, channels, h, w = shape
     freqs = rfft2d_freqs(h, w)
     init_val_size = (batch, channels) + freqs.shape + (2,) # 2 for imaginary and real components
-    sd = sd or 0.01
 
     spectrum_real_imag_t = (torch.randn(*init_val_size) * sd).to(device).requires_grad_(True)
 

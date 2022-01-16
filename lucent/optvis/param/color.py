@@ -15,8 +15,10 @@
 
 from __future__ import absolute_import, division, print_function
 
-import torch
+from typing import Callable, Optional
+
 import numpy as np
+import torch
 
 
 color_correlation_svd_sqrt = np.asarray([[0.26, 0.09, 0.02],
@@ -30,7 +32,14 @@ color_correlation_normalized = color_correlation_svd_sqrt / max_norm_svd_sqrt
 color_mean = [0.48, 0.46, 0.41]
 
 
-def _linear_decorrelate_color(tensor):
+def _linear_decorrelate_color(tensor: torch.Tensor) -> torch.Tensor:
+    """Decorrelates color channels.
+
+    :param tensor: Input tensor
+    :type tensor: torch.Tensor
+    :return: color-decorrelated tensor
+    :rtype: torch.Tensor
+    """
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     t_permute = tensor.permute(0, 2, 3, 1)
     t_permute = torch.matmul(t_permute, torch.tensor(color_correlation_normalized.T).to(device))
@@ -38,7 +47,19 @@ def _linear_decorrelate_color(tensor):
     return tensor
 
 
-def to_valid_rgb(image_f, decorrelate=False):
+def to_valid_rgb(
+    image_f: Callable, 
+    decorrelate: Optional[bool] = False
+) -> Callable:
+    """Converts image function to one with valid rgb values in [0,1] via sigmoid and potentially decorrelates the color channels
+
+    :param image_f: Original image function
+    :type image_f: Callable
+    :param decorrelate: Whether to decorrelate colors, defaults to False
+    :type decorrelate: Optional[bool], optional
+    :return: New image function
+    :rtype: Callable
+    """
     def inner():
         image = image_f()
         if decorrelate:

@@ -19,20 +19,39 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Optional, Tuple, Callable, List
 
+import torch
+
 from lucent.optvis.param.spatial import pixel_image, fft_image
 from lucent.optvis.param.color import to_valid_rgb
-import torch
 
 def image(
     w: int, 
     h: Optional[int] = None, 
-    sd: Optional[float] = None, 
+    sd: Optional[float] = 0.01, 
     batch: Optional[int] = None, 
     decorrelate: Optional[bool] = True,
     fft: Optional[bool] = True, 
     channels: Optional[int] = None,
 ) -> Tuple[List[torch.Tensor], Callable]:
-    
+    """Creates image parameterization either via rgb or fft.
+
+    :param w: image width
+    :type w: int
+    :param h: image height, if None will be the same as ``w``, defaults to None
+    :type h: Optional[int], optional
+    :param sd: standard deviation of random init, defaults to 0.01
+    :type sd: Optional[float], optional
+    :param batch: [description], defaults to None
+    :type batch: Optional[int], optional
+    :param decorrelate: [description], defaults to True
+    :type decorrelate: Optional[bool], optional
+    :param fft: [description], defaults to True
+    :type fft: Optional[bool], optional
+    :param channels: [description], defaults to None
+    :type channels: Optional[int], optional
+    :return: [description]
+    :rtype: Tuple[List[torch.Tensor], Callable]
+    """
     h = h or w
     batch = batch or 1
     ch = channels or 3
