@@ -14,7 +14,7 @@ The original `Lucid <https://github.com/tensorflow/lucid>`_ was developed by Chr
 Documentation and further development by Tom Lieberum.
 
 Check out the :doc:`tutorials` section for further information, including
-how to :ref:`install <installation>` the project.
+how to :ref:`install <installation>` Lucent.
 
 .. note::
 
