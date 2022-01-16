@@ -89,9 +89,9 @@ We will send it to the device and set it to eval mode to avoid gradient tracking
 
 .. code-block:: python
 
-    from torchvision.models import inceptionv1
+    from torchvision.models import GoogLeNet # import InceptionV1 aka GoogLeNet
 
-    model = inceptionv1(pretrained=True)
+    model = GoogLeNet(pretrained=True)
     _ = model.to(device).eval() # the underscore prevents printing the model if it's the last line in a ipynb cell
 
 
