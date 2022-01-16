@@ -17,30 +17,43 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import Union, List, Tuple, Optional, Callable
+
 import numpy as np
 import torch
 import torch.nn.functional as F
 
 from lucent.optvis.param.resize_bilinear_nd import resize_bilinear_nd
 
-
-def lowres_tensor(shape, underlying_shape, offset=None, sd=0.01):
+def lowres_tensor(
+    shape: Union[List, Tuple, torch.Size], 
+    underlying_shape: Union[List, Tuple, torch.Size], 
+    offset: Optional[Union[bool, int, List]] = None, 
+    sd: Optional[float] = 0.01,
+) -> Tuple[List[torch.Tensor], Callable]:
     """Produces a tensor paramaterized by a interpolated lower resolution tensor.
     This is like what is done in a laplacian pyramid, but a bit more general. It
     can be a powerful way to describe images.
-    Args:
-        shape: desired shape of resulting tensor
-        underlying_shape: shape of the tensor being resized into final tensor
-        offset: Describes how to offset the interpolated vector (like phase in a
-            Fourier transform). If None, apply no offset. If a scalar, apply the same
+
+    :param shape: desired shape of resulting tensor
+    :type shape: Union[List, Tuple, torch.Size]
+    :param underlying_shape: shape of the tensor being resized into final tensor
+    :type underlying_shape: Union[List, Tuple, torch.Size]
+    :param offset: Describes how to offset the interpolated vector (like phase in a
+            Fourier transform). If None, apply no offset. If int, apply the same
             offset to each dimension; if a list use each entry for each dimension.
-            If a int, offset by that much. If False, do not offset. If True, offset by
-            half the ratio between shape and underlying shape (analogous to 90
-            degrees).
-        sd: Standard deviation of initial tensor variable.
-    Returns:
-        A tensor paramaterized by a lower resolution tensorflow variable.
+            If False, do not offset. If True, offset by half the ratio between shape and underlying shape (analogous to 90
+            degrees), defaults to None
+    :type offset: Optional[Union[bool, int, List]], optional
+    :param sd: Standard deviation of initial tensor variable., defaults to 0.01
+    :type sd: Optional[float], optional
+    :return: One-element list containing the low resolution tensor and the corresponding image function returning the tensor on call.
+    :rtype: Tuple[List[torch.Tensor], Callable]
     """
+    if isinstance(offset, float):
+        raise TypeError('Passing float offset is deprecated!')
+
+    # TODO pass device as argument to avoid mixing devices
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     underlying_t = (torch.randn(*underlying_shape) * sd).to(device).requires_grad_(True)
     if offset is not None:
@@ -56,7 +69,7 @@ def lowres_tensor(shape, underlying_shape, offset=None, sd=0.01):
             offset[n] = int(offset[n])
             
     def inner():
-        t = resize_bilinear_nd(underlying_t, shape)
+        t = torch.nn.functional.interpolate(underlying_t, shape, mode="bilinear")
         if offset is not None:
             # Actually apply offset by padding and then cropping off the excess.
             t = F.pad(t, offset, "reflect")
