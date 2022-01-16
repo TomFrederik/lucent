@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from lucent.optvis import param, render, objectives
 from lucent.optvis.param.gan import UpConvGAN
-from lucent.modelzoo import inceptionv1
+from torchvision.models import GoogLeNet as inceptionv1
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

@@ -8,7 +8,7 @@ import streamlit as st
 import torch
 import torchvision.models as models
 
-from lucent.modelzoo.util import get_model_layers
+from lucent.model_utils import get_model_layers
 from lucent.optvis import param
 from lucent.optvis.render import render_vis
 import lucent.optvis.objectives as objectives

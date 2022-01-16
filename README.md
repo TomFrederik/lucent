@@ -32,7 +32,7 @@ You can also clone this repository and run the notebooks locally with [Jupyter](
 import torch
 
 from lucent.optvis import render
-from lucent.modelzoo import inceptionv1
+from torchvision.models import GoogLeNet as inceptionv1
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = inceptionv1(pretrained=True)

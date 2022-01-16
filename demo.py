@@ -1,12 +1,12 @@
 import torch
 
 from lucent.optvis import render, param
-from lucent.modelzoo import inceptionv1
+from torchvision.models import GoogLeNet
 
 def main():
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = inceptionv1(pretrained=True)
+    model = GoogLeNet(pretrained=True)
     model.to(device).eval()
 
     CPPN = False

@@ -8,8 +8,8 @@ Subpackages
    :maxdepth: 4
 
    lucent.misc
-   lucent.modelzoo
    lucent.optvis
+
 
 Submodules
 ----------
@@ -21,6 +21,15 @@ lucent.util module
    :members:
    :undoc-members:
    :show-inheritance:
+
+lucent.model_utils module
+------------------
+
+.. automodule:: lucent.model_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

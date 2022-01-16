@@ -40,7 +40,6 @@ how to :ref:`install <installation>` Lucent.
    lucent.optvis
    lucent.interface
    lucent.misc
-   lucent.modelzoo
 
 
 Indices and tables

@@ -22,7 +22,7 @@ import random
 import numpy as np
 from lucent.util import set_seed
 from lucent.optvis import objectives, param, render
-from lucent.modelzoo import inceptionv1
+from torchvision.models import GoogLeNet as inceptionv1
 
 
 set_seed(137)

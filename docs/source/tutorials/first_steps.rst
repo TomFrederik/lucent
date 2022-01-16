@@ -40,7 +40,7 @@ This should then open a tab in your browser looking like this
   :width: 1280
   :alt: investigate_layer_startup
 
-You can now select a model of your choice, either from the torchvision modelzoo or upload your own model. 
+You can now select a model of your choice, either from ``torchvision.models`` or upload your own model. 
 If you wish to load from an old session, you can specify the data directory and tick the ``Load images from data dir`` checkbox.
 
 Click ``Save config``. Lucent should automatically detect all relevant layers for you and list them in the layer drop menu.
@@ -135,7 +135,7 @@ Now, what if you don't know the names of all the layers in your network? Lucent 
 
 .. code-block:: python
 
-    from lucent.modelzoo.util import get_model_layers, filter_layer_names
+    from lucent.model_utils import get_model_layers, filter_layer_names
 
     layer_names, dependency_graph = get_model_layers(model)
     

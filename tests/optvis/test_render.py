@@ -19,7 +19,7 @@ import pytest
 
 import torch
 from lucent.optvis import render, param
-from lucent.modelzoo import inceptionv1
+from torchvision.models import GoogLeNet as inceptionv1
 
 
 @pytest.fixture

@@ -87,7 +87,7 @@ def hook_model(model: torch.nn.Module, image_f: Callable) -> Callable:
         elif layer == "labels":
             out = list(features.values())[-1].features
         else:
-            assert layer in features, f"Invalid layer {layer}. Retrieve the list of layers with `lucent.modelzoo.util.get_moodel_layers(model)`."
+            assert layer in features, f"Invalid layer {layer}. Retrieve the list of layers with `lucent.model_utils.get_moodel_layers(model)`."
             out = features[layer].features
         assert out is not None, "There are no saved feature maps. Make sure to put the model in eval mode, like so: `model.to(device).eval()`. See README for example."
         return out
