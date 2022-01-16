@@ -3,7 +3,7 @@ import pytest
 import torch
 import numpy as np
 from lucent.optvis import param, render, objectives
-from lucent.optvis.param.gan import upconvGAN
+from lucent.optvis.param.gan import UpConvGAN
 from lucent.modelzoo import inceptionv1
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -19,7 +19,7 @@ def test_fc6gan_load():
     """ Test if gan could be downloaded and loaded
     It will download the model and store it locally
     """
-    G = upconvGAN("fc6").to(device)
+    G = UpConvGAN("fc6").to(device)
 
     def GANparam(batch=1, sd=1):
         code = (torch.randn((batch, G.codelen)) * sd).to(device).requires_grad_(True)
@@ -30,7 +30,7 @@ def test_fc6gan_load():
     assert img.shape == (2, 3, 256, 256), "Cannot forward fc6 GAN, shape incorrect."
 
 def test_fc7gan_load():
-    G = upconvGAN("fc7").to(device)
+    G = UpConvGAN("fc7").to(device)
 
     def GANparam(batch=1, sd=1):
         code = (torch.randn((batch, G.codelen)) * sd).to(device).requires_grad_(True)
@@ -41,7 +41,7 @@ def test_fc7gan_load():
     assert img.shape == (2, 3, 256, 256), "Cannot forward fc7 GAN, shape incorrect."
 
 def test_fc8gan_load():
-    G = upconvGAN("fc8").to(device)
+    G = UpConvGAN("fc8").to(device)
 
     def GANparam(batch=1, sd=1):
         code = (torch.randn((batch, G.codelen)) * sd).to(device).requires_grad_(True)
@@ -52,7 +52,7 @@ def test_fc8gan_load():
     assert img.shape == (2, 3, 256, 256), "Cannot forward fc8 GAN, shape incorrect."
 
 def test_pool5gan_load():
-    G = upconvGAN("pool5").to(device)
+    G = UpConvGAN("pool5").to(device)
 
     def GANparam(batch=1, sd=1):
         code = (torch.randn((batch, G.codelen, 6, 6)) * sd).to(device).requires_grad_(True)
@@ -82,7 +82,7 @@ def assert_gan_gradient_descent(GANparam, objective, model):
 
 def test_gan_img_optim(inceptionv1_model):
     """ Test if GAN generated image could be optimized """
-    G = upconvGAN("fc6").to(device)
+    G = UpConvGAN("fc6").to(device)
 
     def GANparam(batch=1, sd=1):
         code = (torch.randn((batch, G.codelen)) * sd).to(device).requires_grad_(True)
@@ -94,7 +94,7 @@ def test_gan_img_optim(inceptionv1_model):
 
 def test_gan_deep_optim(inceptionv1_model):
     """ Test if GAN generated image could be optimized """
-    G = upconvGAN("fc6").to(device)
+    G = UpConvGAN("fc6").to(device)
 
     def GANparam(batch=1, sd=1):
         code = (torch.randn((batch, G.codelen)) * sd).to(device).requires_grad_(True)

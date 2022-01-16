@@ -12,13 +12,15 @@ the author translated the models (pool5-fc8) into pytorch and hosts the weights 
 
 Jun.4th 2020
 """
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 from collections import OrderedDict
 import os
 from os.path import join
 from sys import platform
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 load_urls = True  # If you have downloaded the pt files you can set the netsdir and set load_urls as False.
 netsdir = "~"      # the place you put the networks
 
@@ -32,7 +34,7 @@ def load_statedict_from_online(name="fc6"):
     torchhome = torch.hub._get_torch_home()
     ckpthome = join(torchhome, "checkpoints")
     os.makedirs(ckpthome, exist_ok=True)
-    filepath = join(ckpthome, "upconvGAN_%s.pt"%name)
+    filepath = join(ckpthome, "UpConvGAN_%s.pt"%name)
     if not os.path.exists(filepath):
         torch.hub.download_url_to_file(model_urls[name], filepath, hash_prefix=None,
                                    progress=True)
@@ -52,10 +54,10 @@ RGB_mean = torch.tensor([123.0, 117.0, 104.0])
 RGB_mean = torch.reshape(RGB_mean, (1, 3, 1, 1))
 
 
-class upconvGAN(nn.Module):
+class UpConvGAN(nn.Module):
     def __init__(self, name="fc6", pretrained=True):
         """ `name`: can be ["fc6", "fc7", "fc8", "pool5"] """
-        super(upconvGAN, self).__init__()
+        super(UpConvGAN, self).__init__()
         self.name = name
         if name == "fc6" or name == "fc7":
             self.G = nn.Sequential(OrderedDict([
@@ -144,10 +146,10 @@ class upconvGAN(nn.Module):
             if load_urls:
                 SDnew = load_statedict_from_online(name)
             else:
-                savepath = {"fc6": join(netsdir, "upconvGAN_%s.pt"%name),
-                            "fc7": join(netsdir, "upconvGAN_%s.pt"%name),
-                            "fc8": join(netsdir, "upconvGAN_%s.pt"%name),
-                            "pool5": join(netsdir, "upconvGAN_%s.pt"%name)}
+                savepath = {"fc6": join(netsdir, "UpConvGAN_%s.pt"%name),
+                            "fc7": join(netsdir, "UpConvGAN_%s.pt"%name),
+                            "fc8": join(netsdir, "UpConvGAN_%s.pt"%name),
+                            "pool5": join(netsdir, "UpConvGAN_%s.pt"%name)}
                 SD = torch.load(savepath[name])
                 SDnew = OrderedDict()
                 for name, W in SD.items():  # discard this inconsistency
