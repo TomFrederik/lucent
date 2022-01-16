@@ -22,14 +22,20 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+#TODO Look into how this GAN parameterization works and whether you want to keep it
+
 load_urls = True  # If you have downloaded the pt files you can set the netsdir and set load_urls as False.
 netsdir = "~"      # the place you put the networks
 
-model_urls = {"pool5" : "https://onedrive.live.com/download?cid=9CFFF6BCB39F6829&resid=9CFFF6BCB39F6829%2145337&authkey=AFaUAgeoIg0WtmA",
-            "fc6": "https://onedrive.live.com/download?cid=9CFFF6BCB39F6829&resid=9CFFF6BCB39F6829%2145339&authkey=AC2rQMt7Obr0Ba4",
-            "fc7": "https://onedrive.live.com/download?cid=9CFFF6BCB39F6829&resid=9CFFF6BCB39F6829%2145338&authkey=AJ0R-daUAVYjQIw",
-            "fc8": "https://onedrive.live.com/download?cid=9CFFF6BCB39F6829&resid=9CFFF6BCB39F6829%2145340&authkey=AKIfNk7s5MGrRkU"}
+model_urls = {
+    "pool5" : "https://onedrive.live.com/download?cid=9CFFF6BCB39F6829&resid=9CFFF6BCB39F6829%2145337&authkey=AFaUAgeoIg0WtmA",
+    "fc6": "https://onedrive.live.com/download?cid=9CFFF6BCB39F6829&resid=9CFFF6BCB39F6829%2145339&authkey=AC2rQMt7Obr0Ba4",
+    "fc7": "https://onedrive.live.com/download?cid=9CFFF6BCB39F6829&resid=9CFFF6BCB39F6829%2145338&authkey=AJ0R-daUAVYjQIw",
+    "fc8": "https://onedrive.live.com/download?cid=9CFFF6BCB39F6829&resid=9CFFF6BCB39F6829%2145340&authkey=AKIfNk7s5MGrRkU",
+}
 
+RGB_mean = torch.tensor([123.0, 117.0, 104.0])
+RGB_mean = torch.reshape(RGB_mean, (1, 3, 1, 1))
 
 def load_statedict_from_online(name="fc6"):
     torchhome = torch.hub._get_torch_home()
@@ -41,11 +47,6 @@ def load_statedict_from_online(name="fc6"):
                                    progress=True)
     SD = torch.load(filepath)
     return SD
-
-
-RGB_mean = torch.tensor([123.0, 117.0, 104.0])
-RGB_mean = torch.reshape(RGB_mean, (1, 3, 1, 1))
-
 
 class UpConvGAN(nn.Module):
     def __init__(self, name="fc6", pretrained=True):
@@ -135,6 +136,7 @@ class UpConvGAN(nn.Module):
                 ('deconv0', nn.ConvTranspose2d(32, 3, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))), 
             ]))
             self.codelen = self.G[0].in_channels
+
         # load pre-trained weight from online or local folders
         if pretrained:
             if load_urls:
@@ -150,6 +152,7 @@ class UpConvGAN(nn.Module):
                     name = name.replace(".1.", ".")
                     SDnew[name] = W
             self.G.load_state_dict(SDnew)
+
         self.G.requires_grad_(False)
 
     def forward(self, x):
