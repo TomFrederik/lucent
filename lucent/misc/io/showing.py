@@ -19,6 +19,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import Optional, Tuple
+
 # from io import BytesIO
 import base64
 from string import Template
@@ -33,19 +35,37 @@ from lucent.misc.io.collapse_channels import collapse_channels
 # log = logging.getLogger(__name__)
 
 
-def _display_html(html_str):
+def _display_html(html_str: str) -> None:
+    """Display webpage with given html string
+
+    :param html_str: HTML which shoudl be displayed
+    :type html_str: str
+    """ 
     IPython.display.display(IPython.display.HTML(html_str))
 
 
-def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
-    """Create a data URL representing an image from a PIL.Image.
+def _image_url(
+    array: np.ndarray, 
+    fmt: Optional[str] = 'png', 
+    mode: Optional[str] = "data", 
+    quality: Optional[int] = 90, 
+    domain: Optional[Tuple] = None,
+) -> str:
+    """Create a data URL reprsenting an image from a PIL.Image
 
-    Args:
-        image: a numpy array
-        mode: presently only supports "data" for data URL
-
-    Returns:
-        URL representing image
+    :param array: a numpy array
+    :type array: np.ndarray
+    :param fmt: string describing desired file format, defaults to 'png'
+    :type fmt: Optional[str], optional
+    :param mode: presently only supports "data" for data URL, defaults to "data"
+    :type mode: Optional[str], optional
+    :param quality: specifies compression quality from 0 to 100 for lossy formats, defaults to 90
+    :type quality: Optional[int], optional
+    :param domain: expected range of values in array, if left None will be set to (0, 1), if explicitly set to None will use array's own value range, defaults to None
+    :type domain: Optional[Tuple], optional
+    :raises ValueError: Unsupported mode
+    :return: URL representing image
+    :rtype: str
     """
     supported_modes = ("data")
     if mode not in supported_modes:
@@ -59,7 +79,25 @@ def _image_url(array, fmt='png', mode="data", quality=90, domain=None):
 
 # public functions
 
-def _image_html(array, width=None, domain=None, fmt='png'):
+def _image_html(
+    array: np.ndarray, 
+    width: Optional[int] = None, 
+    domain: Optional[Tuple] = None, 
+    fmt: Optional[str] = 'png',
+) -> str:
+    """Create HTML code snipped to display an image.
+
+    :param array: a numpy array to be displayed
+    :type array: np.ndarray
+    :param width: Width of displayed image defaults to None
+    :type width: Optional[int], optional
+    :param domain: expected range of values in array, if left None will be set to (0, 1), if explicitly set to None will use array's own value range, defaults to None
+    :type domain: Optional[Tuple], optional
+    :param fmt: string describing desired file format, defaults to 'png'
+    :type fmt: Optional[str], optional
+    :return: HTML code to display an image
+    :rtype: str
+    """
     url = _image_url(array, domain=domain, fmt=fmt)
     style = "image-rendering: pixelated;"
     if width is not None:
@@ -67,34 +105,46 @@ def _image_html(array, width=None, domain=None, fmt='png'):
     return """<img src="{url}" style="{style}">""".format(url=url, style=style)
 
 
-def image(array, domain=None, width=None, fmt='png'):
+def image(
+    array: np.ndarray, 
+    width: Optional[int] = None, 
+    domain: Optional[Tuple] = None, 
+    fmt: Optional[str] = 'png',
+) -> None:
     """Display an image.
 
-    Args:
-        array: NumPy array representing the image
-        fmt: Image format e.g. png, jpeg
-        domain: Domain of pixel values, inferred from min & max values if None
-        width: width of output image, scaled using nearest neighbor interpolation.
-            size unchanged if None
+    :param array: a numpy array to be displayed
+    :type array: np.ndarray
+    :param width: width of output image, scaled using nearest neighbor interpolation. size unchanged if None, defaults to None
+    :type width: Optional[int], optional
+    :param domain: expected range of values in array, if left None will be set to (0, 1), if explicitly set to None will use array's own value range, defaults to None
+    :type domain: Optional[Tuple], optional
+    :param fmt: string describing desired file format, defaults to 'png'
+    :type fmt: Optional[str], optional
     """
-
     _display_html(
         _image_html(array, width=width, domain=domain, fmt=fmt)
     )
 
 
-def images(arrays, labels=None, domain=None, width=None):
+def images(
+    arrays: List[np.ndarray], 
+    labels: List[str] = None, 
+    domain: Optional[Tuple] = None, 
+    width: Optional[int] = None,
+) -> None:
     """Display a list of images with optional labels.
 
-    Args:
-        arrays: A list of NumPy arrays representing images
-        labels: A list of strings to label each image.
-            Defaults to show index if None
-        domain: Domain of pixel values, inferred from min & max values if None
-        width: width of output image, scaled using nearest neighbor interpolation.
-            size unchanged if None
+    :param arrays: A list of NumPy arrays representing images
+    :type arrays: List[np.ndarray]
+    :param labels: labels: A list of strings to label each image.
+            Defaults to image index if None
+    :type labels: List[str]
+    :param width: width of output image, scaled using nearest neighbor interpolation. size unchanged if None, defaults to None
+    :type width: Optional[int], optional
+    :param domain: expected range of values in array, if left None will be set to (0, 1), if explicitly set to None will use array's own value range, defaults to None
+    :type domain: Optional[Tuple], optional
     """
-
     string = '<div style="display: flex; flex-direction: row;">'
     for i, array in enumerate(arrays):
         label = labels[i] if labels is not None else i

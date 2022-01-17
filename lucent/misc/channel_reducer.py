@@ -19,6 +19,8 @@ Provides ChannelReducer, a wrapper around sklearn.decomposition to help them
 apply to arbitrary rank tensors. It saves lots of annoying reshaping.
 """
 
+from typing import Optional, Union, Callable, TypeVar
+
 import numpy as np
 import sklearn.decomposition
 
@@ -27,29 +29,31 @@ try:
 except (AttributeError, ModuleNotFoundError):
     from sklearn.base import BaseEstimator
 
+ArrayType = TypeVar('ArrayType', np.ndarray, torch.Tensor)
+
 class ChannelReducer(object):
-    """Helper for dimensionality reduction to the innermost dimension of a tensor.
+    def __init__(
+        self, 
+        n_components: Optional[int] = 3, 
+        reduction_alg: Optional[Union[str, BaseEstimator]] = "NMF", 
+        **kwargs,
+    ):
+        """Helper for dimensionality reduction to the innermost dimension of a tensor.
 
-  This class wraps sklearn.decomposition classes to help them apply to arbitrary
-  rank tensors. It saves lots of annoying reshaping.
+        This class wraps sklearn.decomposition classes to help them apply to arbitrary
+        rank tensors. It saves lots of annoying reshaping.
 
-  See the original sklearn.decomposition documentation:
-  http://scikit-learn.org/stable/modules/classes.html#module-sklearn.decomposition
-  """
+        See the original sklearn.decomposition documentation:
+        http://scikit-learn.org/stable/modules/classes.html#module-sklearn.decomposition
 
-    def __init__(self, n_components=3, reduction_alg="NMF", **kwargs):
+        :param n_components: Number of dimensions to reduce inner most dimension to, defaults to 3
+        :type n_components: Optional[int], optional
+        :param reduction_alg: A string or sklearn.decomposition class - one of "NMF", "PCA", "FastICA" and "MiniBatchDictionaryLearning", defaults to "NMF"
+        :type reduction_alg: Optional[str], optional
+        :raises ValueError: n_components is not an integer
+        :raises ValueError: n_components <= 0
+        :raises ValueError: Unknown reduction algorithm
         """
-        Constructor for ChannelReducer.
-
-        Inputs:
-          n_components: Number of dimensions to reduce inner most dimension to.
-          reduction_alg: A string or sklearn.decomposition class. Defaults to
-            "NMF" (non-negative matrix facotrization). Other options include:
-            "PCA", "FastICA", and "MiniBatchDictionaryLearning". The name of any of
-            the sklearn.decomposition classes will work, though.
-          kwargs: Additional kwargs to be passed on to the reducer.
-        """
-
         if not isinstance(n_components, int):
             raise ValueError("n_components must be an int, not '%s'." % n_components)
         if n_components <= 0:
@@ -73,18 +77,31 @@ class ChannelReducer(object):
         self._is_fit = False
 
     @classmethod
-    def _apply_flat(cls, f, acts):
-        """
-        Utility for applying f to inner dimension of acts.
+    def _apply_flat(
+        cls, 
+        f: Callable, 
+        acts: ArrayType,
+    ) -> ArrayType:
+        """Utility for applying f to inner dimension of acts.
         Flattens acts into a 2D tensor, applies f, then unflattens so that all
-        dimesnions except innermost are unchanged.
+        dimensions except innermost are unchanged.
+
+        :param f: Reducer function to be applied
+        :type f: Callable
+        :param acts: Tensor that should be modified by f
+        :type acts: ArrayType
+        :return: Output of f with input acts
+        :rtype: ArrayType
         """
         orig_shape = acts.shape
-        acts_flat = acts.reshape([-1, acts.shape[-1]])
+        acts_flat = acts.reshape([-1, orig_shape[-1]])
         new_flat = f(acts_flat)
-        if not isinstance(new_flat, np.ndarray):
-            return new_flat
-        shape = list(orig_shape[:-1]) + [-1]
+        
+        #TODO Why do we return [A B C] for ndarrays but [A*B C] for tensors? This seems very off.
+        # I will comment this out and pray for the best
+        # if not isinstance(new_flat, np.ndarray):
+        #     return new_flat
+        shape = list(orig_shape[:-1]) + [-1] 
         return new_flat.reshape(shape)
 
     def fit(self, acts):

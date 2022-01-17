@@ -17,12 +17,25 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import Optional
+
 import math
 import numpy as np
 
 
-def hue_to_rgb(ang, warp=True):
-    """Produce an RGB unit vector corresponding to a hue of a given angle."""
+def hue_to_rgb(
+    ang: int, 
+    warp: Optional[bool] = True
+) -> np.ndarray:
+    """Produce an RGB unit vector corresponding to a hue of a given angle.
+
+    :param ang: Angle in degrees
+    :type ang: int
+    :param warp: Whether to warp the angle away from the primary colors (RGB). Helps make equally-spaced angles more visually distinguishable, defaults to True
+    :type warp: Optional[bool], optional
+    :return: RGB unit vector corresponding to the given angle
+    :rtype: np.ndarray
+    """
     ang = ang - 360*(ang//360)
     colors = np.asarray([
         [1, 0, 0],
@@ -38,8 +51,6 @@ def hue_to_rgb(ang, warp=True):
     D = (ang - n * R) / R
 
     if warp:
-        # warping the angle away from the primary colors (RGB)
-        # helps make equally-spaced angles more visually distinguishable
         adj = lambda x: math.sin(x * math.pi / 2)
         if n % 2 == 0:
             D = adj(D)
