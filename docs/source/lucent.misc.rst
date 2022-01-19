@@ -1,7 +1,7 @@
 lucent.misc package
 ===================
 
-Subpackages
+misc.io
 -----------
 
 .. toctree::
@@ -9,10 +9,7 @@ Subpackages
 
    lucent.misc.io
 
-Submodules
-----------
-
-lucent.misc.channel\_reducer module
+misc.channel\_reducer module
 -----------------------------------
 
 .. automodule:: lucent.misc.channel_reducer

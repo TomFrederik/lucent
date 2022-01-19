@@ -11,9 +11,6 @@ Subpackages
    lucent.optvis
 
 
-Submodules
-----------
-
 lucent.util module
 ------------------
 
