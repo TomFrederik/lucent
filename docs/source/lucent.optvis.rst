@@ -33,6 +33,7 @@ optvis.objectives\_util module
 .. automodule:: lucent.optvis.objectives_util
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
 
 
