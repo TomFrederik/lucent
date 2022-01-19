@@ -18,9 +18,6 @@ optvis.param
 
    lucent.optvis.param
 
-Submodules
-----------
-
 optvis.objectives module
 -------------------------------
 
