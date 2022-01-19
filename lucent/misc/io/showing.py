@@ -19,7 +19,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any, List, Union, Dict
 
 # from io import BytesIO
 import base64
@@ -67,6 +67,7 @@ def _image_url(
     :return: URL representing image
     :rtype: str
     """
+    #TODO check that this way of inferring domain actually works
     supported_modes = ("data")
     if mode not in supported_modes:
         message = "Unsupported mode '%s', should be one of '%s'."
@@ -157,7 +158,11 @@ def images(
     _display_html(string)
 
 
-def show(thing, domain=(0, 1), **kwargs):
+def show(
+    thing: Any, 
+    domain: Optional[Union[Tuple, List]] = (0, 1),
+    **kwargs,
+) -> None:
     """Display a numpy array without having to specify what it represents.
 
     This module will attempt to infer how to display your tensor based on its
@@ -177,12 +182,8 @@ def show(thing, domain=(0, 1), **kwargs):
                              If all positive: each dimension gets an evenly spaced hue.
                              If pos and neg: each dimension gets two hues
                                     (180 degrees apart) for positive and negative.
-
+    
     Common optional arguments:
-
-        domain: range values can be between, for displaying normal images
-            None  = infer domain with heuristics
-            (a,b) = clip values to be between a (min) and b (max).
 
         w: width of displayed images
             None  = display 1 pixel per value
@@ -193,6 +194,12 @@ def show(thing, domain=(0, 1), **kwargs):
             []    = no labels
             [...] = label with corresponding list item
 
+    :param thing: Object that should be displayed.
+    :type thing: Any
+    :param domain: range values can be between, for displaying normal images
+            None  = infer domain with heuristics
+            (a,b) = clip values to be between a (min) and b (max), defaults to (0, 1)
+    :type domain: Optional[Union[Tuple, List]], optional
     """
     def collapse_if_needed(arr):
         channels = arr.shape[-1]
@@ -228,7 +235,13 @@ def show(thing, domain=(0, 1), **kwargs):
         print(repr(thing))
 
 
-def textured_mesh(mesh, texture, background='0xffffff'):
+# Not really sure what this does. For now removed it from the docs
+# TODO
+def textured_mesh(
+    mesh: Dict, 
+    texture: np.ndarray, 
+    background: Optional[str] = '0xffffff',
+) -> None:
     texture_data_url = _image_url(texture, fmt='jpeg', quality=90)
 
     code = Template('''
@@ -371,8 +384,12 @@ def textured_mesh(mesh, texture, background='0xffffff'):
     )
     _display_html(code)
 
-
-def animate_sequence(sequence, domain=(0, 1), fmt='png'):
+# TODO this is never used anywhere in the repo. Maybe remove it. For now I removed it from the RTD page.
+def animate_sequence(
+    sequence, 
+    domain=(0, 1), 
+    fmt='png',
+) -> None:
     steps, height, width, _ = sequence.shape
     sequence = np.concatenate(sequence, 1)
     code = Template('''

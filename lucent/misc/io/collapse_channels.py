@@ -60,8 +60,8 @@ def hue_to_rgb(
     v = (1-D) * colors[n] + D * colors[(n+1) % len(colors)]
     return v / np.linalg.norm(v)
 
-
-def sparse_channels_to_rgb(array):
+#TODO figure out what exactly these two are doing
+def sparse_channels_to_rgb(array: np.ndarray) -> np.ndarray:
     assert (array >= 0).all()
 
     channels = array.shape[-1]
@@ -80,7 +80,7 @@ def sparse_channels_to_rgb(array):
     return rgb
 
 
-def collapse_channels(array):
+def collapse_channels(array: np.ndarray) -> np.ndarray:
     if (array < 0).any():
         array = np.concatenate([np.maximum(0, array), np.maximum(0, -array)], axis=-1)
     return sparse_channels_to_rgb(array)

@@ -9,7 +9,6 @@ lucent.misc.io.collapse\_channels module
 
 .. automodule:: lucent.misc.io.collapse_channels
    :members:
-   :undoc-members:
    :show-inheritance:
 
 lucent.misc.io.serialize\_array module
@@ -25,7 +24,6 @@ lucent.misc.io.showing module
 
 .. automodule:: lucent.misc.io.showing
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Module contents

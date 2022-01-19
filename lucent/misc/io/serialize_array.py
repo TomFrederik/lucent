@@ -17,6 +17,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import Optional, Union, List, Tuple
+
 import base64
 # import logging
 import numpy as np
@@ -28,19 +30,22 @@ from io import BytesIO
 # log = logging.getLogger(__name__)
 
 
-def _normalize_array(array, domain=(0, 1)):
+def _normalize_array(
+    array: np.ndarray, 
+    domain: Optional[Union[List, Tuple]] = (0, 1),
+) -> np.ndarray:
     """Given an arbitrary rank-3 NumPy array, produce one representing an image.
 
     This ensures the resulting array has a dtype of uint8 and a domain of 0-255.
 
-    Args:
-        array: NumPy array representing the image
-        domain: expected range of values in array,
-            defaults to (0, 1), if explicitly set to None will use the array's
-            own range of values and normalize them.
-
-    Returns:
-        normalized PIL.Image
+    :param array: NumPy array representing the image
+    :type array: np.ndarray
+    :param domain: expected range of values in array, 
+            if explicitly set to None will use the array's
+            own range of values and normalize them, defaults to (0, 1)
+    :type domain: Optional[Union[List, Tuple]], optional
+    :return: normalized PIL.Image
+    :rtype: np.ndarray
     """
     # first copy the input so we're never mutating the user's data
     array = np.array(array)
@@ -77,17 +82,21 @@ def _normalize_array(array, domain=(0, 1)):
 
     return array.clip(min_value, max_value).astype(np.uint8)
 
-
-def _serialize_normalized_array(array, fmt='png', quality=70):
+def _serialize_normalized_array(
+    array: np.ndarray, 
+    fmt: Optional[str] = 'png', 
+    quality: Optional[int] = 70,
+) -> BytesIO:
     """Given a normalized array, returns byte representation of image encoding.
 
-    Args:
-        array: NumPy array of dtype uint8 and range 0 to 255
-        fmt: string describing desired file format, defaults to 'png'
-        quality: specifies compression quality from 0 to 100 for lossy formats
-
-    Returns:
-        image data as BytesIO buffer
+    :param array: NumPy array of dtype uint8 and range 0 to 255
+    :type array: np.ndarray
+    :param fmt: string describing desired file format, defaults to 'png', defaults to 'png'
+    :type fmt: Optional[str], optional
+    :param quality: specifies compression quality from 0 to 100 for lossy formats, defaults to 70
+    :type quality: Optional[int], optional
+    :return: image data as BytesIO buffer
+    :rtype: BytesIO
     """
     dtype = array.dtype
     assert np.issubdtype(dtype, np.unsignedinteger)
@@ -102,18 +111,26 @@ def _serialize_normalized_array(array, fmt='png', quality=70):
     return image_data
 
 
-def serialize_array(array, domain=(0, 1), fmt='png', quality=70):
-    """Given an arbitrary rank-3 NumPy array,
-    returns the byte representation of the encoded image.
+def serialize_array(
+    array: np.ndarray, 
+    domain: Optional[Union[List, Tuple]] = (0, 1),
+    fmt: Optional[str] = 'png', 
+    quality: Optional[int] = 70,
+) -> BytesIO:
+    """Given any 3-rank array, returns byte representation of image encoding.
 
-    Args:
-        array: NumPy array of dtype uint8 and range 0 to 255
-        domain: expected range of values in array, see `_normalize_array()`
-        fmt: string describing desired file format, defaults to 'png'
-        quality: specifies compression quality from 0 to 100 for lossy formats
-
-    Returns:
-        image data as BytesIO buffer
+    :param array: NumPy array of rank 3
+    :type array: np.ndarray
+    :param domain: expected range of values in array, 
+            if explicitly set to None will use the array's
+            own range of values and normalize them, defaults to (0, 1)
+    :type domain: Optional[Union[List, Tuple]], optional
+    :param fmt: string describing desired file format, defaults to 'png', defaults to 'png'
+    :type fmt: Optional[str], optional
+    :param quality: specifies compression quality from 0 to 100 for lossy formats, defaults to 70
+    :type quality: Optional[int], optional
+    :return: image data as BytesIO buffer
+    :rtype: BytesIO
     """
     normalized = _normalize_array(array, domain=domain)
     return _serialize_normalized_array(normalized, fmt=fmt, quality=quality)
@@ -124,20 +141,18 @@ JS_ARRAY_TYPES = {
 }
 
 
-def array_to_jsbuffer(array):
-    """Serialize 1d NumPy array to JS TypedArray.
+def array_to_jsbuffer(array: np.ndarray) -> str:
+    """    
+    Serialize 1d NumPy array to JS TypedArray.
 
     Data is serialized to base64-encoded string, which is much faster
     and memory-efficient than json list serialization.
 
-    Args:
-        array: 1d NumPy array, dtype must be one of JS_ARRAY_TYPES.
-
-    Returns:
-        JS code that evaluates to a TypedArray as string.
-
-    Raises:
-        TypeError: if array dtype or shape not supported.
+    :param array: 1d NumPy array, dtype must be one of JS_ARRAY_TYPES.
+    :type array: np.ndarray
+    :return: JS code that evaluates to a TypedArray as string.
+    :rtype: str
+    :raises: TypeError: if array dtype or shape not supported.
     """
     if array.ndim != 1:
         raise TypeError('Only 1d arrays can be converted JS TypedArray.')
