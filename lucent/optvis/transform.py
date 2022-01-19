@@ -15,7 +15,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Callable, Optional, Iterable, TypeVar
+from typing import Callable, Optional, Iterable, Union
 
 import kornia
 from kornia.geometry.transform import translate
