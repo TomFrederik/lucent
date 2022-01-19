@@ -12,4 +12,5 @@ Tutorials and Guides
     parameterizations
     transformations
     custom_objectives
+    notebooks
     

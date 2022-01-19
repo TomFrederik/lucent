@@ -31,6 +31,7 @@ how to :ref:`install <installation>` Lucent.
    tutorials/parameterizations
    tutorials/transformations
    tutorials/custom_objectives
+   tutorials/notebooks
 
 
 .. toctree::
