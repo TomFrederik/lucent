@@ -42,14 +42,6 @@ param.lowres module
    :undoc-members:
    :show-inheritance:
 
-param.resize\_bilinear\_nd module
------------------------------------------------
-
-.. automodule:: lucent.optvis.param.resize_bilinear_nd
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 param.spatial module
 ----------------------------------
 

@@ -23,8 +23,6 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from lucent.optvis.param.resize_bilinear_nd import resize_bilinear_nd
-
 def lowres_tensor(
     shape: Union[List, Tuple, torch.Size], 
     underlying_shape: Union[List, Tuple, torch.Size], 

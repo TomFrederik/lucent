@@ -173,15 +173,15 @@ def show(
     Depending on the size of that dimension, different types of images will be
     generated:
 
-        shp[-1]
-            = 1  --  Black and white image.
-            = 2  --  See >4
-            = 3  --  RGB image.
-            = 4  --  RGBA image.
-            > 4  --  Collapse into an RGB image.
-                             If all positive: each dimension gets an evenly spaced hue.
-                             If pos and neg: each dimension gets two hues
-                                    (180 degrees apart) for positive and negative.
+    shp[-1]
+        = 1  --  Black and white image.
+        = 2  --  See >4
+        = 3  --  RGB image.
+        = 4  --  RGBA image.
+        > 4  --  Collapse into an RGB image.
+                            If all positive: each dimension gets an evenly spaced hue.
+                            If pos and neg: each dimension gets two hues
+                                (180 degrees apart) for positive and negative.
     
     Common optional arguments:
 
