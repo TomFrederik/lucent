@@ -146,15 +146,13 @@ def compose(transforms: Iterable[Callable]) -> Callable:
     return inner
 
 
-RoundType = TypeVar('RoundType', float, int, ArrayLike[int], ArrayLike[float])
-RoundIntegerType = TypeVar('RoundIntegerType', int, ArrayLike[int])
-def _roundup(value: RoundType) -> RoundType:
+def _roundup(value: Union[int, float, ArrayLike]) -> Union[int, ArrayLike]:
     """Computes ceiling of number or elementwise of an ArrayLike
 
     :param value: number or ArrayLike of numbers
-    :type value: RoundType
+    :type value: float, int or ArrayLike of floats or ints
     :return: ceiling of input
-    :rtype: RoundIntegerType
+    :rtype: int or ArrayLike of int
     """
     return np.ceil(value).astype(int)
 
