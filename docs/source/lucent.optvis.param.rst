@@ -1,10 +1,8 @@
 lucent.optvis.param package
 ===========================
 
-Submodules
-----------
 
-lucent.optvis.param.color module
+param.color module
 --------------------------------
 
 .. automodule:: lucent.optvis.param.color
@@ -12,7 +10,7 @@ lucent.optvis.param.color module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.param.cppn module
+param.cppn module
 -------------------------------
 
 .. automodule:: lucent.optvis.param.cppn
@@ -20,7 +18,7 @@ lucent.optvis.param.cppn module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.param.gan module
+param.gan module
 ------------------------------
 
 .. automodule:: lucent.optvis.param.gan
@@ -28,7 +26,7 @@ lucent.optvis.param.gan module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.param.images module
+param.images module
 ---------------------------------
 
 .. automodule:: lucent.optvis.param.images
@@ -36,7 +34,7 @@ lucent.optvis.param.images module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.param.lowres module
+param.lowres module
 ---------------------------------
 
 .. automodule:: lucent.optvis.param.lowres
@@ -44,7 +42,7 @@ lucent.optvis.param.lowres module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.param.resize\_bilinear\_nd module
+param.resize\_bilinear\_nd module
 -----------------------------------------------
 
 .. automodule:: lucent.optvis.param.resize_bilinear_nd
@@ -52,7 +50,7 @@ lucent.optvis.param.resize\_bilinear\_nd module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.param.spatial module
+param.spatial module
 ----------------------------------
 
 .. automodule:: lucent.optvis.param.spatial

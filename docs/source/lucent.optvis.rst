@@ -10,7 +10,7 @@ If you want to write your own objective, you can do so by using the wrap_objecti
 For a more detailed explanation, see :ref:`custom_objectives`.
 
 
-Subpackages
+optvis.param
 -----------
 
 .. toctree::
@@ -21,7 +21,7 @@ Subpackages
 Submodules
 ----------
 
-lucent.optvis.objectives module
+optvis.objectives module
 -------------------------------
 
 .. automodule:: lucent.optvis.objectives
@@ -29,7 +29,8 @@ lucent.optvis.objectives module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.objectives\_util module
+
+optvis.objectives\_util module
 -------------------------------------
 
 .. automodule:: lucent.optvis.objectives_util
@@ -37,7 +38,8 @@ lucent.optvis.objectives\_util module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.render module
+
+optvis.render module
 ---------------------------
 
 .. automodule:: lucent.optvis.render
@@ -45,13 +47,15 @@ lucent.optvis.render module
    :undoc-members:
    :show-inheritance:
 
-lucent.optvis.transform module
+
+optvis.transform module
 ------------------------------
 
 .. automodule:: lucent.optvis.transform
    :members:
    :undoc-members:
    :show-inheritance:
+
 
 Module contents
 ---------------
