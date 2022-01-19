@@ -33,7 +33,7 @@ def cppn(
     size: int, 
     num_output_channels: Optional[int] = 3, 
     num_hidden_channels: Optional[int] = 24, 
-    num_layers: Optionall[int] = 8,
+    num_layers: Optional[int] = 8,
     activation_fn: Optional[torch.nn.Module] = CompositeActivation, 
     normalize: Optional[bool] = False
 ) -> Tuple[Iterator, Callable]:
@@ -46,7 +46,7 @@ def cppn(
     :param num_hidden_channels: number of hidden channels, defaults to 24
     :type num_hidden_channels: Optional[int], optional
     :param num_layers: number of layers, defaults to 8
-    :type num_layers: Optionall[int], optional
+    :type num_layers: Optional[int], optional
     :param activation_fn: activation function after hidden layers, defaults to CompositeActivation
     :type activation_fn: Optional[torch.nn.Module], optional
     :param normalize: Whether to use instance normalization after each hidden layer, defaults to False
