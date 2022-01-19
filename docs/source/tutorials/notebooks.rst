@@ -13,6 +13,7 @@ We aim to update and expand this library in the coming months.
 
 
 Tutorials
+---------
 
 .. image:: ./notebook_images/tutorial_card.jpg
    :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/tutorial.ipynb
@@ -22,6 +23,7 @@ Tutorials
 
 
 Other Notebooks
+---------------
 
 .. image:: ./notebook_images/diversity_card.jpg
    :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/diversity.ipynb
