@@ -23,7 +23,7 @@ lucent.util module
    :show-inheritance:
 
 lucent.model_utils module
-------------------
+-------------------------
 
 .. automodule:: lucent.model_utils
    :members:
