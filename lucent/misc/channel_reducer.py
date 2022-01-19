@@ -23,6 +23,7 @@ from typing import Optional, Union, Callable, TypeVar
 
 import numpy as np
 import sklearn.decomposition
+import torch
 
 try:
     from sklearn.decomposition.base import BaseEstimator

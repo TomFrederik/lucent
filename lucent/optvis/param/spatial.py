@@ -74,7 +74,7 @@ def fft_image(
     shape: Union[List, Tuple, torch.Size], 
     sd: Optional[float] = 0.01, 
     decay_power: Optional[int] = 1,
-) -> Tuple[List[Tensor], Callable]:
+) -> Tuple[List[torch.Tensor], Callable]:
     """Image parameterization via fft spectrum
 
     :param shape: Image shape
