@@ -104,7 +104,7 @@ def get_model_layers(
     excludeNorms: Optional[bool] = True,
     excludeActs: Optional[bool] = True,
     excludePools: Optional[bool] = True,
-) -> Union[List[str], OrderedDict[str, str]]:
+) -> Union[List[str], OrderedDict]:
     """Get the names of all layers of a network. The names are given in the format that can be used
        to access them via objectives.
 
@@ -123,7 +123,7 @@ def get_model_layers(
     :raises ValueError: model has wrong type
     :raises ValueError: model has no modules
     :return: dict of name, repr pairs or just list of names of all layers (including activations if they are instantiated as layers)
-    :rtype: Union[List[str], OrderedDict[str, str]]
+    :rtype: Union[List[str], OrderedDict]
     """
 
 
