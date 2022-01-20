@@ -58,6 +58,8 @@ Lucent via Script
 
 We recommend using an interactive environment for this, such as your own jupyter notebook or a Google Colab.
 
+For an interactive version, see the official, updated `Colab notebook <https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/first_steps.ipynb>`_
+
 If you are running the code in a colab, we first need to install lucent:
 
 ..
@@ -322,6 +324,18 @@ So, actually we already used transformations in all of our examples above. Let's
    
    list_of_images = render.render_vis(model, 'inception4a:476', transforms=[]) 
 
+.. image:: ./notebook_images/first_steps/transform_grey.png 
+
+Whoops, that didn't work. Let's see if it is better if we increase the variation in our random initialization (default is ``sd=0.01``).
+
+.. code-block:: python
+    list_of_images = render.render_vis(model, 'inception4a:476', transforms=[], param_f=lambda: param.image(128, sd=0.1))
+
+.. image:: ./notebook_images/first_steps/transform.png 
+
+There we go! Sometimes you will get a grey image. We think this is not a bug of the library but rather that the optimizer can't find a locally better image,
+especially if it does not have the transformation constraint. 
+If this happens to you and you already tried multiple different settings create an issue on GitHub please.
 
 In addition to the transformations above, each image is by default normalized. If you want to override this normalization you can provide a custom ``preprocess_f`` to ``render_vis`` or completely disable it with ``preprocess=False``.
 
