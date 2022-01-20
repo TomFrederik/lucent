@@ -132,11 +132,12 @@ def get_model_layers(
         raise ValueError(f"model should have type torch.nn.Module but has type {type(model)}")
 
     layers = OrderedDict() if getLayerRepr else []
+    
     if dependencies:
         dependence_graph = OrderedDict()
     else:
         dependence_graph = None
-
+    print(dependence_graph)
     # recursive function to get names
     def recursive_get_names(net, prefix=None):
         if prefix is None:
