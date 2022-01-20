@@ -132,6 +132,8 @@ For example, if we want to optimize the input for the 476th channel in layer ``i
     # list of images has one element in this case
     list_of_images = render.render_vis(model, "inception4a:476")
 
+.. image:: ./notebook_images/first_steps/default.png
+
 Now, what if you don't know the names of all the layers in your network? Lucent has you covered, with its ``get_model_layers`` method:
 
 .. code-block:: python
@@ -170,6 +172,8 @@ You can also explicitly state the objective instead of providing an identifying 
     obj = objectives.channel('inception4a', 476)
     list_of_images = render.render_vis(model, obj)
 
+.. image:: ./notebook_images/first_steps/default.png
+
 There are a few predefined objective functions, such as ``channel``, ``neuron`` and ``direction``. Learn more about them in :ref:`Native Objectives`. 
 You can also define your own objective, which we will explain in :ref:`custom_objectives`. 
 
@@ -187,10 +191,13 @@ For example, we could jointly optimize two channels to see the interaction of tw
     list_of_images = render.render_vis(model, obj)
 
 
+.. image:: ./notebook_images/first_steps/addition.png
+
+
 .. admonition:: Summation
 
     If you want to use the ``sum`` operator, the built-in python method results in an unfortunate nested description. To circumvent
-    this, you can use the classmethod ``Objectives.sum(iterable_of_objectives)`` instead.
+    this, you can use the staticmethod ``Objective.sum(iterable_of_objectives)`` instead.
 
 
 Parameterizations
@@ -245,6 +252,13 @@ The canonical way to do this in Lucent is to call ``lucent.param.image``:
        images.append(render.render_vis(model, 'inception4a:476', param_f=f))
    
 
+.. image:: ./notebook_images/first_steps/rgb_corr.png
+
+.. image:: ./notebook_images/first_steps/fft_corr.png
+
+.. image:: ./notebook_images/first_steps/fft_decorr.png
+
+
 
 Batching
 --------
@@ -272,9 +286,16 @@ be applied to the i-th image, and we can optimize them in parallel.
 .. code-block:: python
 
     objective = objectives.Objective.sum(objectives.channel('inception4a', ch, batch=i) for i, ch in enumerate([476, 477, 478]))
-    list_of_images = render.render_vis(model, objective) # list_of_images has length 3
+    list_of_images = render.render_vis(model, objective, param_f=param_f) # list_of_images has length 3
     
-    
+
+.. image:: ./notebook_images/first_steps/default.png
+
+.. image:: ./notebook_images/first_steps/477_default.png
+
+.. image:: ./notebook_images/first_steps/478_default.png
+
+
 Transformations
 ---------------
 
