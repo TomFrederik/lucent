@@ -68,11 +68,10 @@ def lowres_tensor(
             offset[n] = int(offset[n])
     
     underlying_t = einops.rearrange(underlying_t, 'b c h w -> c b h w')
-    shape = (shape[1], shape[0], shape[2], shape[3])
 
     def inner():
-        t = torch.nn.functional.interpolate(underlying_t, shape, mode="bilinear")
-        t = einops.rearrange(t, 'c b h w -> b c h w')
+        t = torch.nn.functional.interpolate(underlying_t[None], (shape[0], shape[2], shape[3]), mode="trilinear")
+        t = einops.rearrange(t, 'dummy c b h w -> (dummy b) c h w')
         if offset is not None:
             # Actually apply offset by padding and then cropping off the excess.
             t = F.pad(t, offset, "reflect")
