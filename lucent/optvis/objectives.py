@@ -81,6 +81,9 @@ class Objective:
         :return: New Objective instance with the sum of the objective functions as objective function.
         :rtype: Objective
         """
+        # convert to list, otherwise iterators might be empty after first pass
+        objs = list(objs)
+
         objective_func = lambda T: sum([obj(T) for obj in objs])
         descriptions = [obj.description for obj in objs]
         description = "Sum(" + " +\n".join(descriptions) + ")"
