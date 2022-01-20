@@ -138,6 +138,7 @@ def get_model_layers(
     else:
         dependence_graph = None
     print(dependence_graph)
+    
     # recursive function to get names
     def recursive_get_names(net, prefix=None):
         if prefix is None:
@@ -160,6 +161,7 @@ def get_model_layers(
                     if getLayerRepr:
                         layers["->".join(prefix+[name])] = layer.__repr__()
                     else:
+                        print(layers)
                         layers.append("->".join(prefix + [name]))
 
                     if dependence_graph is not None:
