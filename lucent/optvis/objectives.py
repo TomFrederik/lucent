@@ -69,8 +69,8 @@ class Objective:
             description = "Sum(" + " +\n".join([self.description, other.description]) + ")"
         return Objective(objective_func, name=name, description=description)
 
-    @classmethod
-    def sum(cls: T, objs: Iterable[T]) -> T:
+    @staticmethod
+    def sum(objs: Iterable[Objective]) -> Objective:
         #TODO clean up this docstring explanation a bit
         """Alternative to sum(objs) which would return a nested description Sum(d1 + Sum(d2 + Sum(...))) for descriptions d_i which is unreadable.
         Using this method will produce description Sum(d1 + d2 + ...) instead.
@@ -79,14 +79,14 @@ class Objective:
         :param objs: The objectives that should be summed.
         :type objs: Iterable[Objective]
         :return: New Objective instance with the sum of the objective functions as objective function.
-        :rtype: T, where T is Objective or one of its inheritants
+        :rtype: Objective
         """
         objective_func = lambda T: sum([obj(T) for obj in objs])
         descriptions = [obj.description for obj in objs]
         description = "Sum(" + " +\n".join(descriptions) + ")"
         names = [obj.name for obj in objs]
         name = ", ".join(names)
-        return cls(objective_func, name=name, description=description)
+        return Objective(objective_func, name=name, description=description)
 
     def __neg__(self):
         return -1 * self

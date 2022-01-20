@@ -125,11 +125,12 @@ In order to perform feature visualization we have to specify an objective functi
 
 The default of ``render.render_vis`` is to assume you gave it a description of the form 'layer:channel' and want it to optimize the whole feature map of the channel.
 
-For example, if we want to optimize the input for the 476th channel in layer ``mixed4a``:
+For example, if we want to optimize the input for the 476th channel in layer ``inception4a``:
 
 .. code-block:: python
 
-    list_of_images = render.render_vis(model, "mixed4a:476") # list of images has one element in this case
+    # list of images has one element in this case
+    list_of_images = render.render_vis(model, "inception4a:476")
 
 Now, what if you don't know the names of all the layers in your network? Lucent has you covered, with its ``get_model_layers`` method:
 
@@ -141,8 +142,9 @@ Now, what if you don't know the names of all the layers in your network? Lucent 
     
     print(filter_layer_names(layer_names, depth=1))
 
-.. 
-    TODO: print output of filter_layer_names
+.. code-block:: console
+
+    ['conv1', 'conv1->conv', 'conv2', 'conv2->conv', 'conv3', 'conv3->conv', 'inception3a', 'inception3a->branch1', 'inception3a->branch1->conv', ...]
 
 ``layer_names`` is a list of *all* layer names, including nested ones. Nesting is denoted via ``layer->sublayer``. 
 ``dependency_graph`` makes this parent-child relation more explicit by storing all layers in a nested ``OrderedDict``.
@@ -153,12 +155,19 @@ At the present moment we haven't implemented a method to detect how many channel
 Objectives
 ----------
 
-You can also explicitly state the objective, instead of providing an identifying string. The default is the channel objective:
+What loss function do we want to minimize?
+
+Or from another point of view, what part of the model do we want to understand?
+
+In essence, we are trying to generate an image that causes a particular neuron or filter to activate strongly. 
+The objective allows us to select a specific neuron, channel or a mix! The default is the channel objective. 
+
+You can also explicitly state the objective instead of providing an identifying string:
 
 .. code-block:: python
     
     # This code snippet is equivalent to what we did above
-    obj = objectives.channel('mixed4a', 476)
+    obj = objectives.channel('inception4a', 476)
     list_of_images = render.render_vis(model, obj)
 
 There are a few predefined objective functions, such as ``channel``, ``neuron`` and ``direction``. Learn more about them in :ref:`Native Objectives`. 
@@ -220,15 +229,20 @@ The canonical way to do this in Lucent is to call ``lucent.param.image``:
 
 .. code-block:: python
    
-   # the first parameter determines the image width -> influences runtime significantly
-   param_f = lambda: param.image(w=128, fft=False, decorrelate=False) # this is vanilla RGB-parameterization
-   fft_param_f = lambda: param.image(w=128, fft=True, decorrelate=False) # using Fourier basis instead of pixel values
-   fft_decor_param_f = lambda: param.image(w=128, fft=True, decorrelate=True) # this is the default setting
+   # the width parameter determines the image width -> influences runtime significantly
+   # this is vanilla RGB-parameterization
+   param_f = lambda: param.image(w=128, fft=False, decorrelate=False)
+   
+   # using Fourier basis instead of pixel values
+   fft_param_f = lambda: param.image(w=128, fft=True, decorrelate=False)
+   
+   # this is the default setting
+   fft_decor_param_f = lambda: param.image(w=128, fft=True, decorrelate=True)
    
    # Let's see what the difference in output is:
    images = []
    for f in [param_f, fft_param_f, fft_decor_param_f]:
-       images.append(render.render_vis(model, 'mixed4a:476', param_f=f))
+       images.append(render.render_vis(model, 'inception4a:476', param_f=f))
    
 
 
@@ -237,7 +251,7 @@ Batching
 
 Let's say you want to generate many visualizations at once, either for different settings and the same objective or different objectives.
 
-The way Lucent handles this is a bit unintuitive at the beginning.
+The way Lucent handles this is a bit unintuitive in the beginning.
 
 In essence, you can specify for each objective function which batch dimension it should pay attention to. By default, an objective is applied 
 to the full batch of images, but you can also pass a ``batch`` parameter to specify which element of the batch it should be applied to.
@@ -251,13 +265,13 @@ are using the built-in parameterizations, you can simply pass this as an additio
     batch_size = 3
     param_f = lambda: param.image(w=128, batch=batch_size)
 
-Now, let's say we want to optimize three different channels, ``476``, ``477``, and ``478`` of the layer ``mixed4a``. We do this by creating the *sum* of
+Now, let's say we want to optimize three different channels, ``476``, ``477``, and ``478`` of the layer ``inception4a``. We do this by creating the *sum* of
 the individual objectives and setting the ``batch`` keyword argument to a different value in [0,1,2] for each of them. This way, each objective will only
 be applied to the i-th image, and we can optimize them in parallel.
 
 .. code-block:: python
 
-    objective = Objective.sum(objectives.channel('mixed4a', ch, batch=i) for i, ch in enumerate([476, 477, 478]))
+    objective = objectives.Objective.sum(objectives.channel('inception4a', ch, batch=i) for i, ch in enumerate([476, 477, 478]))
     list_of_images = render.render_vis(model, objective) # list_of_images has length 3
     
     
@@ -285,7 +299,7 @@ So, actually we already used transformations in all of our examples above. Let's
 
 .. code-block:: python
    
-   list_of_images = render.render_vis(model, 'mixed4a:476', transforms=[]) 
+   list_of_images = render.render_vis(model, 'inception4a:476', transforms=[]) 
 
 
 In addition to the transformations above, each image is by default normalized. If you want to override this normalization you can provide a custom ``preprocess_f`` to ``render_vis`` or completely disable it with ``preprocess=False``.
