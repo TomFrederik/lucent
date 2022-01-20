@@ -257,7 +257,7 @@ be applied to the i-th image, and we can optimize them in parallel.
 
 .. code-block:: python
 
-    objective = Objectives.sum(objectives.channel('mixed4a', ch, batch=i) for i, ch in enumerate([476, 477, 478]))
+    objective = Objective.sum(objectives.channel('mixed4a', ch, batch=i) for i, ch in enumerate([476, 477, 478]))
     list_of_images = render.render_vis(model, objective) # list_of_images has length 3
     
     
