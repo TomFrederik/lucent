@@ -37,14 +37,14 @@ The following notebooks are already updated and tested:
 .. image:: ./notebook_images/diversity_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/diversity.ipynb
 
+.. image:: ./notebook_images/neuron_interaction_card.jpg
+   :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/neuron_interaction.ipynb
+
 
 Old Notebooks
 -------------
 
 The following notebooks are still written in the original Lucent version.
-
-.. image:: ./notebook_images/neuron_interaction_card.jpg
-   :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/neuron_interaction.ipynb
 
 .. image:: ./notebook_images/feature_inversion_card.jpg
    :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/feature_inversion.ipynb
