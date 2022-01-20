@@ -22,14 +22,14 @@ from lucent.optvis import param
 
 def test_lowres():
 	# Without offset
-    params, image_f = param.lowres_tensor((6, 3, 128, 128), (1, 3, 64, 64))
+    params, image_f = param.lowres_tensor((128, 128), (1, 3, 64, 64))
     assert params[0].shape == (1, 3, 64, 64)
     assert image_f().shape == (6, 3, 128, 128)
     # With offset as scalar
-    params, image_f = param.lowres_tensor((6, 3, 128, 128), (1, 3, 64, 64), offset=5)
+    params, image_f = param.lowres_tensor((128, 128), (1, 3, 64, 64), offset=5)
     assert params[0].shape == (1, 3, 64, 64)
     assert image_f().shape == (6, 3, 128, 128)
     # With offset as list
-    params, image_f = param.lowres_tensor((6, 3, 128, 128), (1, 3, 64, 64), offset=[1, False, 1, True])
+    params, image_f = param.lowres_tensor((128, 128), (1, 3, 64, 64), offset=[1, False, 1, True])
     assert params[0].shape == (1, 3, 64, 64)
     assert image_f().shape == (6, 3, 128, 128)

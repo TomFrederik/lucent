@@ -19,6 +19,7 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Union, List, Tuple, Optional, Callable
 
+import einops
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -33,7 +34,7 @@ def lowres_tensor(
     This is like what is done in a laplacian pyramid, but a bit more general. It
     can be a powerful way to describe images.
 
-    :param shape: desired shape of resulting tensor
+    :param shape: desired shape of resulting tensor, should be of format (B, C, H, W) #TODO support more shapes
     :type shape: Union[List, Tuple, torch.Size]
     :param underlying_shape: shape of the tensor being resized into final tensor
     :type underlying_shape: Union[List, Tuple, torch.Size]
@@ -65,9 +66,13 @@ def lowres_tensor(
             if offset[n] is False:
                 offset[n] = 0
             offset[n] = int(offset[n])
-            
+    
+    underlying_t = einops.rearrange(underlying_t, 'b c h w -> c b h w')
+    shape = (shape[1], shape[0], shape[2], shape[3])
+
     def inner():
         t = torch.nn.functional.interpolate(underlying_t, shape, mode="bilinear")
+        t = einops.rearrange(t, 'c b h w -> b c h w')
         if offset is not None:
             # Actually apply offset by padding and then cropping off the excess.
             t = F.pad(t, offset, "reflect")

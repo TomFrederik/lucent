@@ -12,14 +12,10 @@ Note that these older notebooks might differ slightly from the documentation in 
 We aim to update and expand this library in the coming months.
 
 
-Updated Notebooks
-=================
-
-The following notebooks are already updated and tested:
 
 
 Tutorials
----------
+=========
 
 .. image:: ./notebook_images/tutorial_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/first_steps.ipynb
@@ -29,17 +25,23 @@ Tutorials
 
 
 
-
-Old Notebooks
-=============
-
-The following notebooks are still written in the original Lucent version.
-
 Other Notebooks
----------------
+===============
+
+
+Updated Notebooks
+-----------------
+
+The following notebooks are already updated and tested:
 
 .. image:: ./notebook_images/diversity_card.jpg
-   :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/diversity.ipynb
+   :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/diversity.ipynb
+
+
+Old Notebooks
+-------------
+
+The following notebooks are still written in the original Lucent version.
 
 .. image:: ./notebook_images/neuron_interaction_card.jpg
    :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/neuron_interaction.ipynb
