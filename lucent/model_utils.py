@@ -132,7 +132,10 @@ def get_model_layers(
         raise ValueError(f"model should have type torch.nn.Module but has type {type(model)}")
 
     layers = OrderedDict() if getLayerRepr else []
-    dependence_graph = OrderedDict() if dependencies else None
+    if dependencies:
+        dependence_graph = OrderedDict()
+    else:
+        dependence_graph = None
 
     # recursive function to get names
     def recursive_get_names(net, prefix=None):
@@ -165,7 +168,8 @@ def get_model_layers(
                     or isinstance(layer, nn.ModuleDict)
                     or isinstance(layer, nn.ModuleList)
                 ):
-                    dependence_graph = add_to_dependence_graph(dependence_graph, prefix, name)
+                    if dependence_graph is not None:
+                        dependence_graph = add_to_dependence_graph(dependence_graph, prefix, name)
 
                 # recurse
                 recursive_get_names(layer, prefix=prefix + [name])
@@ -175,6 +179,9 @@ def get_model_layers(
     recursive_get_names(model)
     
     return layers, dependence_graph
+
+def filter_layer_names(layer_names, depth):
+    raise NotImplementedError()
 
 def add_to_dependence_graph(dependence_graph, prefix, name):
     if len(prefix) == 0:
