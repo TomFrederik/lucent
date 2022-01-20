@@ -137,9 +137,14 @@ def compose(transforms: Iterable[Callable]) -> Callable:
     :return: Transform function
     :rtype: Callable
     """
+    transforms = list(transforms)
+
     def inner(x):
         for transform in transforms:
+            print(x)
             x = transform(x)
+            print(x)
+            raise ValueError()
         return x
 
     return inner
