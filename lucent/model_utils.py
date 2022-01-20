@@ -179,7 +179,7 @@ def get_model_layers(
 def add_to_dependence_graph(dependence_graph, prefix, name):
     if len(prefix) == 0:
         if name in dependence_graph:
-            raise ValueError(f'Duplicate module detected: {name = }, {prefix = }')
+            raise ValueError(f'Duplicate module detected: name = {name}, prefix = {prefix}')
         dependence_graph[name] = OrderedDict()
     else:
         cur_dict = dependence_graph
