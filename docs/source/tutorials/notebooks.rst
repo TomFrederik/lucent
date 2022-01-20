@@ -24,6 +24,9 @@ Tutorials
 .. image:: ./notebook_images/tutorial_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/first_steps.ipynb
 
+.. image:: ./notebook_images/modelzoo_card.jpg
+   :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/Lucent_%2B_torchvision.ipynb
+
 
 
 
@@ -31,13 +34,6 @@ Old Notebooks
 =============
 
 The following notebooks are still written in the original Lucent version.
-
-Tutorials
----------
-
-.. image:: ./notebook_images/modelzoo_card.jpg
-   :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/modelzoo.ipynb
-
 
 Other Notebooks
 ---------------
