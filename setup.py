@@ -35,7 +35,7 @@ setup(
         "torchvision",
         "kornia<=0.4.1",
         "tqdm",
-        "numpy>=1.20",
+        "numpy",
         "ipython",
         "pillow",
         "future",

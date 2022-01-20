@@ -20,7 +20,6 @@ from typing import Callable, Optional, Iterable, Union
 import kornia
 from kornia.geometry.transform import translate
 import numpy as np
-from numpy.typing import ArrayLike
 import torch
 import torch.nn.functional as F
 from torchvision.transforms import Normalize
@@ -76,11 +75,11 @@ def pad(
 
 
 #TODO: not sure this is implemented correctly/most efficiently, why not just use interpolate?
-def random_scale(scales: ArrayLike) -> Callable:
+def random_scale(scales: Union[List, Tuple, np.ndarray]) -> Callable:
     """Returns a transform that randomly scales the input tensor.
 
-    :param scales: ArrayLike (e.g. list, tuple, ndarray) of allowed scales
-    :type scales: ArrayLike
+    :param scales: list, tuple, or ndarray of allowed scales
+    :type scales: Union[List, Tuple, np.ndarray]
     :return: Transform function
     :rtype: Callable
     """
@@ -99,13 +98,13 @@ def random_scale(scales: ArrayLike) -> Callable:
 
 
 def random_rotate(
-    angles: ArrayLike, 
+    angles: Union[List, Tuple, np.ndarray], 
     units: Optional[str] = "degrees"
 ) -> Callable:
     """Returns a transform that randomly rotates an input image.
 
-    :param angles: ArrayLike of allowed angles.
-    :type angles: ArrayLike
+    :param angles: list, tuple, or np.ndarray of allowed angles.
+    :type angles: Union[List, Tuple, np.ndarray]
     :param units: "degrees" or "radians", defaults to "degrees"
     :type units: Optional[str], optional
     :return: Transform function
@@ -146,13 +145,13 @@ def compose(transforms: Iterable[Callable]) -> Callable:
     return inner
 
 
-def _roundup(value: Union[int, float, ArrayLike]) -> Union[int, ArrayLike]:
-    """Computes ceiling of number or elementwise of an ArrayLike
+def _roundup(value: Union[int, float, Union[List, Tuple, np.ndarray]]) -> Union[int, Union[List, Tuple, np.ndarray]]:
+    """Computes ceiling of number or elementwise of a list, tuple, or np.ndarray
 
-    :param value: number or ArrayLike of numbers
-    :type value: float, int or ArrayLike of floats or ints
+    :param value: number or Union[List, Tuple, np.ndarray] of numbers
+    :type value: float, int or Union[List, Tuple, np.ndarray] of floats or ints
     :return: ceiling of input
-    :rtype: int or ArrayLike of int
+    :rtype: int or Union[List, Tuple, np.ndarray] of int
     """
     return np.ceil(value).astype(int)
 
