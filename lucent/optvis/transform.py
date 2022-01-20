@@ -141,10 +141,7 @@ def compose(transforms: Iterable[Callable]) -> Callable:
 
     def inner(x):
         for transform in transforms:
-            print(x)
             x = transform(x)
-            print(x)
-            raise ValueError()
         return x
 
     return inner
