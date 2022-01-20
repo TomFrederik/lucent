@@ -89,9 +89,9 @@ We will send it to the device and set it to eval mode to avoid gradient tracking
 
 .. code-block:: python
 
-    from torchvision.models import GoogLeNet # import InceptionV1 aka GoogLeNet
+    from torchvision.models import googlenet # import InceptionV1 aka GoogLeNet
 
-    model = GoogLeNet(pretrained=True)
+    model = googlenet(pretrained=True)
     _ = model.to(device).eval() # the underscore prevents printing the model if it's the last line in a ipynb cell
 
 
@@ -123,7 +123,7 @@ The core idea is to optimize the input image to the network such that a certain 
 
 In order to perform feature visualization we have to specify an objective function with respect to which we will optimize the input image.
 
-The default of render.render_vis is to assume you gave it a description of the form 'layer:channel' and want it to optimize the whole feature map of the channel.
+The default of ``render.render_vis`` is to assume you gave it a description of the form 'layer:channel' and want it to optimize the whole feature map of the channel.
 
 For example, if we want to optimize the input for the 476th channel in layer ``mixed4a``:
 
