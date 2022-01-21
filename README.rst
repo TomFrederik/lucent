@@ -68,14 +68,9 @@ Other Notebooks
 .. image:: ./docs/source/tutorials/notebook_images/style_transfer_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/style_transfer.ipynb
 
-
-Old Notebooks
--------------
-
-The following notebooks are still written in the original Lucent version.
-
 .. image:: ./docs/source/tutorials/notebook_images/activation_grids_card.jpg
-   :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/activation_grids.ipynb
+   :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/activation_grids.ipynb
+
 
 Recommended Readings
 ====================
