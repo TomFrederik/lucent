@@ -117,10 +117,10 @@ def init(model_name):
     return model
 
 def get_max_depth(dependence_graph: OrderedDict):
-    if not dependence_graph:
+    if len(dependence_graph) == 0:
         return 0
     else:
-        return 1 + max(get_max_depth(subgraph) for subgraph in dependence_graph.items())
+        return 1 + max(get_max_depth(subgraph) for name, subgraph in dependence_graph.items())
 
 
 def display_database(
