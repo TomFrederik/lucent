@@ -47,25 +47,25 @@ Quickstart
 Tutorials
 =========
 
-.. image:: ./notebook_images/tutorial_card.jpg
+.. image:: ./docs/source/tutorials/notebook_images/tutorial_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/first_steps.ipynb
 
-.. image:: ./notebook_images/modelzoo_card.jpg
+.. image:: ./docs/source/tutorials/notebook_images/modelzoo_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/Lucent_%2B_torchvision.ipynb
 
 Other Notebooks
 ===============
 
-.. image:: ./notebook_images/diversity_card.jpg
+.. image:: ./docs/source/tutorials/notebook_images/diversity_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/diversity.ipynb
 
-.. image:: ./notebook_images/neuron_interaction_card.jpg
+.. image:: ./docs/source/tutorials/notebook_images/neuron_interaction_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/neuron_interaction.ipynb
 
-.. image:: ./notebook_images/feature_inversion_card.jpg
+.. image:: ./docs/source/tutorials/notebook_images/feature_inversion_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/feature_inversion.ipynb
 
-.. image:: ./notebook_images/style_transfer_card.jpg
+.. image:: ./docs/source/tutorials/notebook_images/style_transfer_card.jpg
    :target: https://colab.research.google.com/github/TomFrederik/lucent/blob/dev/notebooks/style_transfer.ipynb
 
 
@@ -74,7 +74,7 @@ Old Notebooks
 
 The following notebooks are still written in the original Lucent version.
 
-.. image:: ./notebook_images/activation_grids_card.jpg
+.. image:: ./docs/source/tutorials/notebook_images/activation_grids_card.jpg
    :target: https://colab.research.google.com/github/greentfrapp/lucent-notebooks/blob/master/notebooks/activation_grids.ipynb
 
 Recommended Readings
