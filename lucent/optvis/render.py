@@ -49,7 +49,7 @@ def render_vis(
     fixed_image_size: Optional[int] = None,
 ) -> List[np.ndarray]:
     """Main function to perform feature visualization. It takes a model, 
-    an objective function and an image paremeterization to compute the optimal image for the given objective.
+    an objective function and an image parameterization to compute the optimal image for the given objective.
 
     :param model: Model for which the objective is computed.
     :type model: torch.nn.Module
